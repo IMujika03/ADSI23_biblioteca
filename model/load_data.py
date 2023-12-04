@@ -11,29 +11,34 @@ cur = con.cursor()
 
 ### Create tables
 cur.execute("""
-	CREATE TABLE Author(
-		id integer primary key AUTOINCREMENT,
-		name varchar(40)
+	CREATE TABLE Liburu_Kopiak(
+		KopiaID integer primary key AUTOINCREMENT,
+		LiburuID integer,
+		FOREIGN KEY (LiburuID) REFERENCES Liburua(Kodea)
 	)
 """)
 
 cur.execute("""
-	CREATE TABLE Book(
-		id integer primary key AUTOINCREMENT,
-		title varchar(50),
-		author integer,
-		cover varchar(50),
-		description TEXT,
-		FOREIGN KEY(author) REFERENCES Author(id)
+	CREATE TABLE Liburua(
+		Kodea integer primary key AUTOINCREMENT,
+		GehitzaileMailKontua varchar(50),
+		Izenburua varchar(50),
+		Egilea integer,
+		Mota varchar(50),
+		FOREIGN KEY(GehitzaileMailKontua) REFERENCES Erabiltzailea(MailKontua)
 	)
 """)
 
 cur.execute("""
-	CREATE TABLE User(
-		id integer primary key AUTOINCREMENT,
-		name varchar(20),
-		email varchar(30),
-		password varchar(32)
+	CREATE TABLE Erabiltzailea(
+		MailKontua integer primary key AUTOINCREMENT,
+		SortzaileMailKontua varchar(20),
+		Izena varchar(30),
+		Abizena varchar(32),
+		Pasahitza varchar(30),
+		Rola varchar(30),
+		lagunakOnartzekoAukera integer,
+		FOREIGN KEY (SortzaileMailKontua) REFERENCES Erabiltzailea(MailKontua)
 	)
 """)
 
@@ -42,9 +47,63 @@ cur.execute("""
 		session_hash varchar(32) primary key,
 		user_id integer,
 		last_login float,
-		FOREIGN KEY(user_id) REFERENCES User(id)
+		FOREIGN KEY(user_id) REFERENCES Erabiltzailea(MailKontua)
 	)
 """)
+
+cur.execute("""
+	CREATE TABLE Erreseina(
+		Liburua integer primary key,
+		Erabiltzailea varchar primary key ,
+		Puntuaketa integer,
+		Komentarioa TEXT,
+		FOREIGN KEY (Liburua) REFERENCES Liburua(Kodea),
+		FOREIGN KEY (Erabiltzailea) REFERENCES Erabiltzailea(MailKontua)
+	)
+""")
+
+cur.execute("""
+	CREATE TABLE LagunEgin(
+		Erabiltzailea1 varchar primary key,
+		Erabiltzailea2 varchar primary key ,
+		FOREIGN KEY (Erabiltzailea1) REFERENCES Erabiltzailea(MailKontua),
+		FOREIGN KEY (Erabiltzailea2) REFERENCES Erabiltzailea(MailKontua)
+	)
+""")
+
+cur.execute("""
+	CREATE TABLE Gaia(
+		Izenburua varchar primary key,
+		MailKontua varchar,
+		FOREIGN KEY (MailKontua) REFERENCES Erabiltzailea(MailKontua)
+	)
+""")
+
+cur.execute("""
+	CREATE TABLE Komentarioa(
+		ID integer primary key AUTOINCREMENT,
+		MailKontua varchar primary key ,
+		GaiIzenburu varchar,
+		ErantzunKomentarioa integer,
+		Testua TEXT,
+		FOREIGN KEY (MailKontua) REFERENCES Erabiltzailea(MailKontua),
+		FOREIGN KEY (GaiIzenburu) REFERENCES Gaia(Izenburua),
+		FOREIGN KEY (ErantzunKomentarioa) REFERENCES Komentarioa(ID)
+	)
+""")
+
+cur.execute("""
+	CREATE TABLE Erreserbatua(
+		Erabiltzailea varchar primary key,
+		Data DATE primary key ,
+		LiburuKopia integer primary key ,
+		EntregatzeData DATE,
+		Kantzelatuta integer,
+		FOREIGN KEY (Erabiltzailea) REFERENCES Erabiltzailea(MailKontua),
+		FOREIGN KEY (LiburuKopia) REFERENCES Liburu_Kopiak(KopiaID)
+	)
+""")
+
 
 ### Insert users
 
