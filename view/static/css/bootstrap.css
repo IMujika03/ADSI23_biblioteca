@@ -12065,4 +12065,26 @@ textarea.form-control-lg {
   }
 }
 
+/* besteak */
+.besteak-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.besteak-container div{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.besteak-container button{
+    width: 20%;
+    margin-right: 10px;
+}
+
+.besteak-container p{
+    width: 80%;
+}
+
 /*# sourceMappingURL=bootstrap.css.map */
