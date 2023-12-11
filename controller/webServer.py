@@ -34,7 +34,9 @@ def index():
 @app.route('/besteak')
 def besteak():
 	return render_template('besteak.html')
-
+@app.route('/pertsonala')
+def pertsonala():
+	return render_template('pertsonala.html')
 
 @app.route('/catalogue')
 def catalogue():
