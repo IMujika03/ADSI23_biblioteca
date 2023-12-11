@@ -47,6 +47,12 @@ def catalogue():
 	                       total_pages=total_pages, max=max, min=min)
 
 
+@app.route('/liburua')
+def liburua():
+	idliburu = request.values.get("id", "")
+	liburua = library.search_books(title=title, author=author, page=page - 1)
+	return render_template('liburuBista.html', book=liburua)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if 'user' in dir(request) and request.user and request.user.token:

@@ -13,6 +13,7 @@ class LibraryController:
 		return cls.__instance
 
 
+
 	def search_books(self, title="", author="", limit=6, page=0):
 		count = db.select("""
 				SELECT count() 
