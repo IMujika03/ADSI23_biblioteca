@@ -31,6 +31,10 @@ def add_cookies(response):
 def index():
 	return render_template('index.html')
 
+@app.route('/besteak')
+def besteak():
+	return render_template('besteak.html')
+
 
 @app.route('/catalogue')
 def catalogue():
