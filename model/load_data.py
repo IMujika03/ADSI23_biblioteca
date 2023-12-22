@@ -1,17 +1,19 @@
 import hashlib
+import os.path
 import sqlite3
 import json
 
 salt = "library"
+fitx_izen = os.path.dirname(__file__)
+db_path = os.path.join(fitx_izen,"..","datos.db")#Guraso direktoriaren helbidea behar da, bestela ez da aurkitzen
 
-
-con = sqlite3.connect("datos.db")
+con = sqlite3.connect(db_path)
 cur = con.cursor()
 
 
 ### Create tables
 cur.execute("""
-	CREATE TABLE Liburu_Kopiak(
+	CREATE TABLE IF NOT EXISTS Liburu_Kopiak(
 		KopiaID integer primary key AUTOINCREMENT,
 		LiburuID integer,
 		FOREIGN KEY (LiburuID) REFERENCES Liburua(Kodea)
@@ -19,20 +21,19 @@ cur.execute("""
 """)
 
 cur.execute("""
-	CREATE TABLE Liburua(
+	CREATE TABLE IF NOT EXISTS Liburua(
 		Kodea integer primary key AUTOINCREMENT,
-		GehitzaileMailKontua varchar(50),
 		Izenburua varchar(50),
-		Egilea integer,
-		Mota varchar(50),
-		FOREIGN KEY(GehitzaileMailKontua) REFERENCES Erabiltzailea(MailKontua)
+		Egilea varchar(50),
+		Portada varchar(50),
+		Deskribapena TEXT
 	)
 """)
 
 cur.execute("""
-	CREATE TABLE Erabiltzailea(
-		MailKontua integer primary key AUTOINCREMENT,
-		SortzaileMailKontua varchar(20),
+	CREATE TABLE IF NOT EXISTS Erabiltzailea(
+		MailKontua varchar(50) primary key,
+		SortzaileMailKontua varchar(50),
 		Izena varchar(30),
 		Abizena varchar(32),
 		Pasahitza varchar(30),
@@ -43,7 +44,7 @@ cur.execute("""
 """)
 
 cur.execute("""
-	CREATE TABLE Session(
+	CREATE TABLE IF NOT EXISTS Session(
 		session_hash varchar(32) primary key,
 		user_id integer,
 		last_login float,
@@ -52,27 +53,29 @@ cur.execute("""
 """)
 
 cur.execute("""
-	CREATE TABLE Erreseina(
-		Liburua integer primary key,
-		Erabiltzailea varchar primary key ,
+	CREATE TABLE IF NOT EXISTS Erreseina(
+		Liburua integer,
+		Erabiltzailea varchar,
 		Puntuaketa integer,
 		Komentarioa TEXT,
+		PRIMARY KEY (Liburua,Erabiltzailea),
 		FOREIGN KEY (Liburua) REFERENCES Liburua(Kodea),
 		FOREIGN KEY (Erabiltzailea) REFERENCES Erabiltzailea(MailKontua)
 	)
 """)
 
 cur.execute("""
-	CREATE TABLE LagunEgin(
-		Erabiltzailea1 varchar primary key,
-		Erabiltzailea2 varchar primary key ,
+	CREATE TABLE IF NOT EXISTS LagunEgin(
+		Erabiltzailea1 varchar,
+		Erabiltzailea2 varchar,
+		PRIMARY KEY(Erabiltzailea1, Erabiltzailea2),
 		FOREIGN KEY (Erabiltzailea1) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (Erabiltzailea2) REFERENCES Erabiltzailea(MailKontua)
 	)
 """)
 
 cur.execute("""
-	CREATE TABLE Gaia(
+	CREATE TABLE IF NOT EXISTS Gaia(
 		Izenburua varchar primary key,
 		MailKontua varchar,
 		FOREIGN KEY (MailKontua) REFERENCES Erabiltzailea(MailKontua)
@@ -80,12 +83,13 @@ cur.execute("""
 """)
 
 cur.execute("""
-	CREATE TABLE Komentarioa(
-		ID integer primary key AUTOINCREMENT,
-		MailKontua varchar primary key ,
+	CREATE TABLE IF NOT EXISTS Komentarioa(
+		ID integer,
+		MailKontua varchar,
 		GaiIzenburu varchar,
 		ErantzunKomentarioa integer,
 		Testua TEXT,
+		PRIMARY KEY (ID,MailKontua),
 		FOREIGN KEY (MailKontua) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (GaiIzenburu) REFERENCES Gaia(Izenburua),
 		FOREIGN KEY (ErantzunKomentarioa) REFERENCES Komentarioa(ID)
@@ -93,47 +97,39 @@ cur.execute("""
 """)
 
 cur.execute("""
-	CREATE TABLE Erreserbatua(
-		Erabiltzailea varchar primary key,
-		Data DATE primary key ,
-		LiburuKopia integer primary key ,
+	CREATE TABLE IF NOT EXISTS Erreserbatua(
+		Erabiltzailea varchar,
+		Data1 DATE,
+		LiburuKopia integer,
 		EntregatzeData DATE,
 		Kantzelatuta integer,
+		PRIMARY KEY(Erabiltzailea,Data1,LiburuKopia),
 		FOREIGN KEY (Erabiltzailea) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (LiburuKopia) REFERENCES Liburu_Kopiak(KopiaID)
 	)
 """)
 
-
 ### Insert users
-
-with open('usuarios.json', 'r') as f:
+json_path = os.path.join(fitx_izen,"..","usuarios.json")
+with open(json_path, 'r') as f:
 	usuarios = json.load(f)['usuarios']
 
 for user in usuarios:
 	dataBase_password = user['password'] + salt
 	hashed = hashlib.md5(dataBase_password.encode())
 	dataBase_password = hashed.hexdigest()
-	cur.execute(f"""INSERT INTO User VALUES (NULL, '{user['nombres']}', '{user['email']}', '{dataBase_password}')""")
+	cur.execute(f"""INSERT OR REPLACE INTO User VALUES (NULL, '{user['nombre']}', '{user['email']}', '{dataBase_password}')""")
 	con.commit()
-
 
 #### Insert books
-with open('libros.tsv', 'r') as f:
-	libros = [x.split("\t") for x in f.readlines()]
+libros_path = os.path.join(fitx_izen,"..","libros.tsv")
+with open(libros_path, 'r',encoding='utf-8') as f:
+    libros = [x.split("\t") for x in f]
 
 for author, title, cover, description in libros:
-	res = cur.execute(f"SELECT id FROM Author WHERE name=\"{author}\"")
-	if res.rowcount == -1:
-		cur.execute(f"""INSERT INTO Author VALUES (NULL, \"{author}\")""")
-		con.commit()
-		res = cur.execute(f"SELECT id FROM Author WHERE name=\"{author}\"")
-	author_id = res.fetchone()[0]
+	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",
+		            (title, author, cover, description.strip()))
 
-	cur.execute("INSERT INTO Book VALUES (NULL, ?, ?, ?, ?)",
-		            (title, author_id, cover, description.strip()))
-
-	con.commit()
-
-
+con.commit()
+con.close()
 
