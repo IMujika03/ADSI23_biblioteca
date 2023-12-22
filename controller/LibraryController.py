@@ -39,13 +39,13 @@ class LibraryController:
 	def get_user(self, email, password):
 		user = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
 		if len(user) > 0:
-			return User(user[0][0], user[0][2]+user[0][3])
+			return User(user[0][0], user[0][2]+" "+user[0][3])
 		else:
 			return None
 
 	def get_user_cookies(self, token, time):
 		user = db.select("SELECT u.* from Erabiltzailea u, Session s WHERE u.MailKontua = s.user_id AND s.last_login = ? AND s.session_hash = ?", (time, token))
 		if len(user) > 0:
-			return User(user[0][0], user[0][2]+user[0][3])
+			return User(user[0][0], user[0][2]+" "+user[0][3])
 		else:
 			return None
