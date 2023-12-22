@@ -51,7 +51,9 @@ def catalogue():
 
 @app.route('/liburua')
 def liburua():
-	idliburu = request.values.get("id", "")
+	title = request.values.get("title", "")
+	author = request.values.get("author", "")
+	page = int(request.values.get("page", 1))
 	liburua = library.search_books(title=title, author=author, page=page - 1)
 	return render_template('liburuBista.html', book=liburua)
 

@@ -17,17 +17,15 @@ class LibraryController:
 	def search_books(self, title="", author="", limit=6, page=0):
 		count = db.select("""
 				SELECT count() 
-				FROM Book b, Author a 
-				WHERE b.author=a.id 
-					AND b.title LIKE ? 
-					AND a.name LIKE ? 
+				FROM Liburua l
+				WHERE l.Izenburua LIKE ? 
+					AND l.Egilea LIKE ? 
 		""", (f"%{title}%", f"%{author}%"))[0][0]
 		res = db.select("""
-				SELECT b.* 
-				FROM Book b, Author a 
-				WHERE b.author=a.id 
-					AND b.title LIKE ? 
-					AND a.name LIKE ? 
+				SELECT l.* 
+				FROM Liburua l 
+				WHERE l.Izenburua LIKE ? 
+					AND l.Egilea LIKE ? 
 				LIMIT ? OFFSET ?
 		""", (f"%{title}%", f"%{author}%", limit, limit*page))
 		books = [
