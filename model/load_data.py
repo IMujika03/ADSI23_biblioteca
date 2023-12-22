@@ -46,7 +46,7 @@ cur.execute("""
 cur.execute("""
 	CREATE TABLE IF NOT EXISTS Session(
 		session_hash varchar(32) primary key,
-		user_id integer,
+		user_id varchar(50),
 		last_login float,
 		FOREIGN KEY(user_id) REFERENCES Erabiltzailea(MailKontua)
 	)
@@ -118,7 +118,7 @@ for user in usuarios:
 	dataBase_password = user['password'] + salt
 	hashed = hashlib.md5(dataBase_password.encode())
 	dataBase_password = hashed.hexdigest()
-	cur.execute(f"""INSERT OR REPLACE INTO User VALUES (NULL, '{user['nombre']}', '{user['email']}', '{dataBase_password}')""")
+	cur.execute(f"""INSERT OR REPLACE INTO Erabiltzailea VALUES ('{user['email']}','admin@gmail.com', '{user['nombre']}','{user['apellido']}', '{dataBase_password}','erab',0)""")
 	con.commit()
 
 #### Insert books
