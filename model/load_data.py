@@ -11,6 +11,15 @@ con = sqlite3.connect(db_path)
 cur = con.cursor()
 
 
+tables_to_drop = [
+    'Book', 'Erabiltzailea', 'Erreseina', 'Erreserbatua',
+    'Gaia', 'Komentarioa', 'LagunEgin', 'Liburu_Kopiak',
+    'Liburua', 'Session', 'User'
+]
+
+for table in tables_to_drop:
+    cur.execute(f"DROP TABLE IF EXISTS {table};")
+
 ### Create tables
 cur.execute("""
 	CREATE TABLE IF NOT EXISTS Liburu_Kopiak(
@@ -115,10 +124,10 @@ with open(json_path, 'r') as f:
 	usuarios = json.load(f)['usuarios']
 
 for user in usuarios:
-	dataBase_password = user['password'] + salt
+	dataBase_password = user['Pasahitza'] + salt
 	hashed = hashlib.md5(dataBase_password.encode())
 	dataBase_password = hashed.hexdigest()
-	cur.execute(f"""INSERT OR REPLACE INTO Erabiltzailea VALUES ('{user['email']}','admin@gmail.com', '{user['nombre']}','{user['apellido']}', '{dataBase_password}','erab',0)""")
+	cur.execute(f"""INSERT OR REPLACE INTO Erabiltzailea VALUES ('{user['MailKontua']}','{user['SortzaileMailKontua']}', '{user['Izena']}','{user['Abizena']}', '{dataBase_password}','{user['Rola']}',{user['lagunakOnartzekoAukera']})""")
 	con.commit()
 
 #### Insert books
@@ -127,8 +136,7 @@ with open(libros_path, 'r',encoding='utf-8') as f:
     libros = [x.split("\t") for x in f]
 
 for author, title, cover, description in libros:
-	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",
-		            (title, author, cover, description.strip()))
+	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",(title, author, cover, description.strip()))
 
 con.commit()
 con.close()

@@ -1,39 +1,49 @@
 {
   "usuarios": [
     {
-      "id": "a1",
-      "nombre": "James",
-      "apellido": "Gomez",
-      "email": "james@gmail.com",
-      "password": "123456"
+      "MailKontua": "james@gmail.com",
+      "SortzaileMailKontua": "admin@gmail.com",
+      "Izena": "James",
+      "Abizena": "Gomez",
+      "Pasahitza": "123456",
+      "Rola": "erab",
+      "lagunakOnartzekoAukera": "0"
     },
     {
-      "nombre": "Jhon",
-      "apellido": "Doe",
-      "email": "jhon@gmail.com",
-      "password": "123",
-      "id": "IPB7fSC"
+      "MailKontua": "jhon@gmail.com",
+      "SortzaileMailKontua": "admin@gmail.com",
+      "Izena": "Jhon",
+      "Abizena": "Doe",
+      "Pasahitza": "123",
+      "Rola": "erab",
+      "lagunakOnartzekoAukera": "0"
     },
     {
-      "nombre": "Juan ",
-      "apellido": "Ejemplo",
-      "email": "ejemplo@gmail.com",
-      "password": "123456",
-      "id": "NgbZCib"
+      "MailKontua": "ejemplo2@gmail.com",
+      "SortzaileMailKontua": "admin@gmail.com",
+      "Izena": "Juan",
+      "Abizena": "Ejemplo",
+      "Pasahitza": "123456",
+      "Rola": "erab",
+      "lagunakOnartzekoAukera": "0"
     },
     {
-      "nombre": "Juan",
-      "apellido": "Ejemplo",
-      "email": "ejemplo2@gmail.com",
-      "password": "123456",
-      "id": "S_Faisg"
+      "MailKontua": "ejemplo@gmail.com",
+      "SortzaileMailKontua": "admin@gmail.com",
+      "Izena": "Joaquín",
+      "Abizena": "Ejemplo",
+      "Pasahitza": "123456",
+      "Rola": "erab",
+      "lagunakOnartzekoAukera": "0"
     },
     {
-      "nombre": "Admin",
-      "apellido": "JR",
-      "email": "admin@gmail.com",
-      "password": "master",
-      "id": "admin"
+      "MailKontua": "admin@gmail.com",
+      "SortzaileMailKontua": "admin@gmail.com",
+      "Izena": "Admin",
+      "Abizena": "JR",
+      "Pasahitza": "master",
+      "Rola": "admin",
+      "lagunakOnartzekoAukera": "0"
     }
   ]
 }

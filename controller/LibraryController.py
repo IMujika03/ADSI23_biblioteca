@@ -36,16 +36,16 @@ class LibraryController:
 		return books, count
 
 	def get_user(self, email, password):
-		user = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
-		if len(user) > 0:
-			return User(user[0][0], user[0][2]+" "+user[0][3])
+		emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
+		if len(emaitza) > 0:
+			return User(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
 		else:
 			return None
 
 	def get_user_cookies(self, token, time):
-		user = db.select("SELECT u.* from Erabiltzailea u, Session s WHERE u.MailKontua = s.user_id AND s.last_login = ? AND s.session_hash = ?", (time, token))
-		if len(user) > 0:
-			return User(user[0][0], user[0][2]+" "+user[0][3])
+		emaitza = db.select("SELECT u.* from Erabiltzailea u, Session s WHERE u.MailKontua = s.user_id AND s.last_login = ? AND s.session_hash = ?", (time, token))
+		if len(emaitza) > 0:
+			return User(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
 		else:
 			return None
 
