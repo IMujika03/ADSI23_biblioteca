@@ -1,5 +1,4 @@
 from .Connection import Connection
-from .Author import Author
 
 db = Connection()
 
