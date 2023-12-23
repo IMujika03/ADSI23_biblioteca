@@ -36,7 +36,14 @@ def besteak():
 	return render_template('besteak.html')
 @app.route('/pertsonala')
 def pertsonala():
-	return render_template('pertsonala.html')
+	title = request.values.get("title", "")
+	author = request.values.get("author", "")
+	page = int(request.values.get("page", 1))
+	email = request.values.get("email", "")
+	erreserbak, nb_erreserbak = library.search_erreserbak(title=title,author=author,email=email,page=page-1)
+	total_pages = (nb_erreserbak//6)+1
+	return render_template('pertsonala.html',erreserbak=erreserbak,title=title,author=author,current_page=page,
+						   total_pages=total_pages,max=max,min=min)
 
 @app.route('/catalogue')
 def catalogue():

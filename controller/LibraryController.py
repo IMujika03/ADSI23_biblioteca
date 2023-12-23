@@ -1,4 +1,4 @@
-from model import Connection, Book, User
+from model import Connection, Book, User, Erreserbatuta
 from model.tools import hash_password
 
 db = Connection()
@@ -47,3 +47,33 @@ class LibraryController:
 			return User(user[0][0], user[0][2]+" "+user[0][3])
 		else:
 			return None
+
+	def search_erreserbak(self, title="", author="", email="", limit=6, page=0):
+		count = db.select("""
+	            SELECT COUNT (*)
+	            FROM Liburu_Kopiak k
+	            INNER JOIN Liburua l
+	            ON k.LiburuID = l.Kodea
+	            INNER JOIN Erreserbatua e
+	            ON k.LiburuID = e.LiburuKopia
+	            WHERE l.Izenburua LIKE ?
+	                AND l.Egilea LIKE ?
+	                AND e.Erabiltzailea = ?
+	            """, (f"%{title}%", f"%{author}%", email))[0][0]
+		res = db.select("""
+				SELECT e.*
+	            FROM Liburu_Kopiak k
+	            INNER JOIN Liburua l
+	            ON k.LiburuID = l.Kodea
+	            INNER JOIN Erreserbatua e
+	            ON k.KopiaID = e.LiburuKopia
+	            WHERE l.Izenburua LIKE ?
+	                AND l.Egilea LIKE ?
+	                AND e.Erabiltzailea = ?
+				LIMIT ? OFFSET ?
+				""", (f"%{title}%", f"%{author}%",email, limit, limit * page))
+		erreserbak= [
+			Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
+			for e in res
+		]
+		return erreserbak,count
