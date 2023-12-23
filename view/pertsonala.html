@@ -10,6 +10,25 @@
 <div class="container p-4 my-4 border">
     <h2>Erreserbak</h2>
 
+    <div class="row">
+    {% if erreserbak %} <!-- Si la variable erreserbak no está vacía -->
+        {% for erreserba, lib_info in zip(erreserbak, lib_info) %} <!-- Para cada reserva y título en las listas de reservas y títulos -->
+            <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+                <div class="card d-flex flex-row" style="width: 18rem;">
+                    {% if lib_info.2: %}
+                        <img src="{{lib_info.2}}" class="rounded" style="max-width: 6rem; height: fit-content;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/liburua?id={{lib_info.0}}">{{book.title}}</a></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{lib_info.1}}</h6>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %} <!-- Si la variable erreserbak está vacía -->
+      <p>Ez daude libururik erreserbaturik.</p> <!-- Mostrar un mensaje indicando que no hay libros reservados -->
+    {% endif %}
+    </div>
     <nav>
       <ul class="pagination justify-content-center">
 

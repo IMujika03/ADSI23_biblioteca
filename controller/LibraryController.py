@@ -55,7 +55,7 @@ class LibraryController:
 	            INNER JOIN Liburua l
 	            ON k.LiburuID = l.Kodea
 	            INNER JOIN Erreserbatua e
-	            ON k.LiburuID = e.LiburuKopia
+	            ON k.KopiaID = e.LiburuKopia
 	            WHERE l.Izenburua LIKE ?
 	                AND l.Egilea LIKE ?
 	                AND e.Erabiltzailea = ?
@@ -76,4 +76,14 @@ class LibraryController:
 			Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
 			for e in res
 		]
-		return erreserbak,count
+		liburu_info=[self.aurkituLibKopiatik(e.LiburuKopia) for e in erreserbak]
+		return erreserbak,liburu_info,count
+	def aurkituLibKopiatik(self,kopia_id):
+		res = db.select("""
+		            SELECT l.Izenburua,l.Kodea,l.Portada
+		            FROM Liburu_Kopiak k
+		            INNER JOIN Liburua l
+		            ON k.LiburuID = l.Kodea
+		            WHERE k.KopiaID = ?
+		            """, (kopia_id,))
+		return res[0]

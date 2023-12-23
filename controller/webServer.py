@@ -40,9 +40,9 @@ def pertsonala():
 	author = request.values.get("author", "")
 	page = int(request.values.get("page", 1))
 	email = request.values.get("email", "")
-	erreserbak, nb_erreserbak = library.search_erreserbak(title=title,author=author,email=email,page=page-1)
+	erreserbak,lib_info,nb_erreserbak = library.search_erreserbak(title=title,author=author,email=email,page=page-1)
 	total_pages = (nb_erreserbak//6)+1
-	return render_template('pertsonala.html',erreserbak=erreserbak,title=title,author=author,current_page=page,
+	return render_template('pertsonala.html',erreserbak=erreserbak,lib_info=lib_info,title=title,author=author,current_page=page,
 						   total_pages=total_pages,max=max,min=min)
 
 @app.route('/catalogue')
