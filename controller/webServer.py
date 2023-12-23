@@ -2,6 +2,7 @@ from .LibraryController import LibraryController
 from flask import Flask, render_template, request, make_response, redirect
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
+app.jinja_env.globals.update(zip=zip) # Añadir esta línea
 
 
 library = LibraryController()
@@ -36,13 +37,11 @@ def besteak():
 	return render_template('besteak.html')
 @app.route('/pertsonala')
 def pertsonala():
-	title = request.values.get("title", "")
-	author = request.values.get("author", "")
 	page = int(request.values.get("page", 1))
-	email = request.values.get("email", "")
-	erreserbak,lib_info,nb_erreserbak = library.search_erreserbak(title=title,author=author,email=email,page=page-1)
+	email = library.aurkituSaioaDuenErab()
+	erreserbak,lib_info,nb_erreserbak = library.search_erreserbak(email=email,page=page-1)
 	total_pages = (nb_erreserbak//6)+1
-	return render_template('pertsonala.html',erreserbak=erreserbak,lib_info=lib_info,title=title,author=author,current_page=page,
+	return render_template('pertsonala.html',erreserbak=erreserbak,lib_info=lib_info,current_page=page,
 						   total_pages=total_pages,max=max,min=min)
 
 @app.route('/catalogue')

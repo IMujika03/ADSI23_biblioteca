@@ -1,4 +1,5 @@
-from model import Connection, Book, User, Erreserbatuta
+from model import Connection, Book, User
+from model.Erreserbatuta import Erreserbatuta
 from model.tools import hash_password
 
 db = Connection()
@@ -48,7 +49,7 @@ class LibraryController:
 		else:
 			return None
 
-	def search_erreserbak(self, title="", author="", email="", limit=6, page=0):
+	def search_erreserbak(self, email, limit=6, page=0):
 		count = db.select("""
 	            SELECT COUNT (*)
 	            FROM Liburu_Kopiak k
@@ -56,28 +57,25 @@ class LibraryController:
 	            ON k.LiburuID = l.Kodea
 	            INNER JOIN Erreserbatua e
 	            ON k.KopiaID = e.LiburuKopia
-	            WHERE l.Izenburua LIKE ?
-	                AND l.Egilea LIKE ?
-	                AND e.Erabiltzailea = ?
-	            """, (f"%{title}%", f"%{author}%", email))[0][0]
+	            WHERE e.Erabiltzailea = ?
+	            """, (email,))[0][0]
 		res = db.select("""
-				SELECT e.*
+	            SELECT e.*
 	            FROM Liburu_Kopiak k
 	            INNER JOIN Liburua l
 	            ON k.LiburuID = l.Kodea
 	            INNER JOIN Erreserbatua e
 	            ON k.KopiaID = e.LiburuKopia
-	            WHERE l.Izenburua LIKE ?
-	                AND l.Egilea LIKE ?
-	                AND e.Erabiltzailea = ?
-				LIMIT ? OFFSET ?
-				""", (f"%{title}%", f"%{author}%",email, limit, limit * page))
-		erreserbak= [
-			Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
+	            WHERE e.Erabiltzailea = ? 
+	            LIMIT ? OFFSET ?
+	            """, (email, limit, limit * page))
+		erreserbak = [
+			Erreserbatuta(e[0], e[1], e[2], e[3])
 			for e in res
 		]
-		liburu_info=[self.aurkituLibKopiatik(e.LiburuKopia) for e in erreserbak]
-		return erreserbak,liburu_info,count
+		liburu_info = [self.aurkituLibKopiatik(e.libId) for e in erreserbak]
+		return erreserbak, liburu_info, count
+
 	def aurkituLibKopiatik(self,kopia_id):
 		res = db.select("""
 		            SELECT l.Izenburua,l.Kodea,l.Portada
@@ -87,3 +85,9 @@ class LibraryController:
 		            WHERE k.KopiaID = ?
 		            """, (kopia_id,))
 		return res[0]
+	def aurkituSaioaDuenErab(self):
+		res = db.select("""
+				SELECT s.user_id
+				FROM Session s
+			""")
+		return res[0][0]
