@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="check-btn-container" style="display: flex; flex-direction: column; align-items: flex-end;">
   <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
     <img src="https://www.svgrepo.com/show/522270/settings.svg" alt="Aukerak" width="32" height="32">
@@ -22,13 +23,26 @@
                         <h5 class="card-title"><a href="/liburua?id={{lib_info.0}}">{{lib_info.0}}</a></h5>
                         <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
                         <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
+                        <div class="valoracion">
+                          {% for i in range(1, 6) %}
+                            {% if i <= erreserba.punt %}
+                              <i class="fa fa-star"style=color:yellow></i>
+                            {% else %}
+                              <i class="fa fa-star"></i>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
                     </div>
+                    {% if erreserba.desk %}
+                    <!-- Usamos un elemento blockquote para mostrar la descripción de la valoración con un estilo diferente -->
+                    <blockquote class="descripcion">{{erreserba.desk}}</blockquote>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
-    {% else %} <!-- Si la variable erreserbak está vacía -->
-      <p>Ez daude libururik erreserbaturik.</p> <!-- Mostrar un mensaje indicando que no hay libros reservados -->
-    {% endif %}
+        {% else %} <!-- Si la variable erreserbak está vacía -->
+          <p>Ez daude libururik erreserbaturik.</p> <!-- Mostrar un mensaje indicando que no hay libros reservados -->
+        {% endif %}
     </div>
     <nav>
       <ul class="pagination justify-content-center">
@@ -57,4 +71,5 @@
       </ul>
     </nav>
 </div>
+
 {% endblock %}

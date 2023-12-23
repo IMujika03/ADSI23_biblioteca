@@ -51,26 +51,28 @@ class LibraryController:
 
 	def search_erreserbak(self, email, limit=6, page=0):
 		count = db.select("""
-	            SELECT COUNT (*)
-	            FROM Liburu_Kopiak k
-	            INNER JOIN Liburua l
-	            ON k.LiburuID = l.Kodea
-	            INNER JOIN Erreserbatua e
-	            ON k.KopiaID = e.LiburuKopia
-	            WHERE e.Erabiltzailea = ?
-	            """, (email,))[0][0]
+	        SELECT COUNT (*)
+	        FROM Liburu_Kopiak k
+	        INNER JOIN Liburua l
+	        ON k.LiburuID = l.Kodea
+	        INNER JOIN Erreserbatua e
+	        ON k.KopiaID = e.LiburuKopia
+	        WHERE e.Erabiltzailea = ?
+	        """, (email,))[0][0]
 		res = db.select("""
-	            SELECT e.*
-	            FROM Liburu_Kopiak k
-	            INNER JOIN Liburua l
-	            ON k.LiburuID = l.Kodea
-	            INNER JOIN Erreserbatua e
-	            ON k.KopiaID = e.LiburuKopia
-	            WHERE e.Erabiltzailea = ? 
-	            LIMIT ? OFFSET ?
-	            """, (email, limit, limit * page))
+	        SELECT e.*, v.Puntuaketa, v.Komentarioa
+	        FROM Liburu_Kopiak k
+	        INNER JOIN Liburua l
+	        ON k.LiburuID = l.Kodea
+	        INNER JOIN Erreserbatua e
+	        ON k.KopiaID = e.LiburuKopia
+	        LEFT JOIN Erreseina v
+	        ON l.Kodea = v.Liburua AND e.Erabiltzailea = v.Erabiltzailea
+	        WHERE e.Erabiltzailea = ? 
+	        LIMIT ? OFFSET ?
+	        """, (email, limit, limit * page))
 		erreserbak = [
-			Erreserbatuta(e[0], e[1], e[2], e[3])
+			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka
 			for e in res
 		]
 		liburu_info = [self.aurkituLibKopiatik(e.libId) for e in erreserbak]
