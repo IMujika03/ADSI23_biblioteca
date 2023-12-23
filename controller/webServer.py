@@ -48,7 +48,6 @@ def catalogue():
 	return render_template('catalogue.html', books=books, title=title, author=author, current_page=page,
 	                       total_pages=total_pages, max=max, min=min)
 
-
 @app.route('/liburua')
 def liburua():
 	title = request.values.get("title", "")
@@ -61,7 +60,7 @@ def liburua():
 def login():
 	if 'user' in dir(request) and request.user and request.user.token:
 		return redirect('/')
-	email = request.values.get("email", "")
+	email = request.values.get("email", "") #html-tik aterata, izen hori duten input-ak
 	password = request.values.get("password", "")
 	user = library.get_user(email, password)
 	if user:
