@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .Connection import Connection
 
 db = Connection()
@@ -5,9 +7,9 @@ db = Connection()
 class Erreserbatuta:
 	def __init__(self, erabiltzaile, data, liburuId, entregaData):
 		self.erabiltzaile=erabiltzaile
-		self.erresData =data
+		self.erresData =datetime.fromtimestamp(data/1000).strftime("%d/%m/%Y")
 		self.libId = liburuId
-		self.entrData = entregaData
+		self.entrData = datetime.fromtimestamp(entregaData/1000).strftime("%d/%m/%Y")
 
 	def __str__(self):
 		return f"{self.erabiltzaile} ({self.libId})"
