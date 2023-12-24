@@ -8,42 +8,63 @@
   </button>
   <div style="margin: 10px; font-weight: bold; margin-top: -25px;">Aukerak</div>
 </div>
-<div class="container p-4 my-4 border">
-    <h2>Erreserbak</h2>
+<h2>Erreserbak</h2>
 
-    <div class="row">
+<ul class="row">
     {% if erreserbak %} <!-- Si la variable erreserbak no está vacía -->
-        {% for erreserba, lib_info in zip(erreserbak, lib_info) %} <!-- Para cada reserva y título en las listas de reservas y títulos -->
-            <div class="col-lg-4 col-md-6 col-sm-12 my-2">
-                <div class="card d-flex flex-row" style="width: 18rem;">
+    {% for erreserba, lib_info in zip(erreserbak, lib_info) %} <!-- Para cada reserva y título en las listas de reservas y títulos -->
+    <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+        <div class="card" style="width: 18rem; overflow: auto;">
+            <div class="card-body" style="display: flex; flex-direction: row;">
+                <div style="width: 50%;">
+                    <h5 class="card-title"><a href="/liburua?id={{lib_info.0}}">{{lib_info.0}}</a></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
+                </div>
+                <div class="card-footer" style="width: 50%; margin-left: auto;">
                     {% if lib_info.2: %}
-                        <img src="{{lib_info.2}}" class="rounded" style="max-width: 6rem; height: fit-content;">
+                    <img src="{{lib_info.2}}" class="rounded" style="max-width: 6rem; height: fit-content; float: left;">
                     {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="/liburua?id={{lib_info.0}}">{{lib_info.0}}</a></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
-                        <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
-                        <div class="valoracion">
-                          {% for i in range(1, 6) %}
+                    {% if erreserba.punt:%}
+                        <div class="valoracion" style="float: right;">
+                            {% for i in range(1, 6) %}
                             {% if i <= erreserba.punt %}
-                              <i class="fa fa-star"style=color:yellow></i>
+                            <i class="fa fa-star"style=color:yellow></i>
                             {% else %}
-                              <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
                             {% endif %}
-                          {% endfor %}
+                            {% endfor %}
+                            <br>
+                            {% if erreserba.desk %}
+                            {{erreserba.desk}}
+                            {% else %}
+                            Ez da egin erreseinarik
+                            {% endif %}
                         </div>
-                    </div>
-                    {% if erreserba.desk %}
-                    <!-- Usamos un elemento blockquote para mostrar la descripción de la valoración con un estilo diferente -->
-                    <blockquote class="descripcion">{{erreserba.desk}}</blockquote>
+                    {% else %}
+                        <div class="valoracion" style="float: right;">
+                            {% for i in range(1, 6) %}
+                            <i class="fa fa-star"></i>
+                            {% endfor %}
+                            <br>
+                            {% if erreserba.desk %}
+                            {{erreserba.desk}}
+                            {% else %}
+                            Ez da egin erreseinarik
+                            {% endif %}
+                        </div>
                     {% endif %}
                 </div>
             </div>
+        </div>
         {% endfor %}
         {% else %} <!-- Si la variable erreserbak está vacía -->
           <p>Ez daude libururik erreserbaturik.</p> <!-- Mostrar un mensaje indicando que no hay libros reservados -->
         {% endif %}
     </div>
+</ul>
+
+
     <nav>
       <ul class="pagination justify-content-center">
 
@@ -70,6 +91,5 @@
         {% endif %}
       </ul>
     </nav>
-</div>
 
 {% endblock %}
