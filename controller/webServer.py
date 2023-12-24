@@ -40,10 +40,10 @@ def besteak():
 def pertsonala():
 	page = int(request.values.get("page", 1))
 	email = library.aurkituSaioaDuenErab()
-	erreserbak,lib_info,nb_erreserbak = library.search_erreserbak(email=email,page=page-1)
+	erreserbak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page-1)
 	total_pages = (nb_erreserbak//6)+1
-	return render_template('pertsonala.html',erreserbak=erreserbak,lib_info=lib_info,current_page=page,
-						   total_pages=total_pages,max=max,min=min)
+	return render_template('pertsonala.html', erreserbak=erreserbak, lib_info=lib_info, current_page=page,
+						   total_pages=total_pages, max=max, min=min)
 
 @app.route('/catalogue')
 def catalogue():
