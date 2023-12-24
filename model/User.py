@@ -1,4 +1,6 @@
 import datetime
+import hashlib
+
 from .Connection import Connection
 from .tools import hash_password
 
@@ -42,3 +44,15 @@ class User:
 
 	def delete_session(self, session_hash):
 		db.delete("DELETE FROM Session WHERE session_hash = ? AND user_id = ?", (session_hash, self.MailKontua))
+
+	def new_user(self):
+		print(self.MailKontua + self.SortzaileMailKontua + self.Izena + self.Abizena + self.Pasahitza + self.Rola + self.lagunakOnartzekoAukera)
+		s = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ?", (self.MailKontua,))
+		if len(s) <= 0:
+			dataBase_password = self.Pasahitza + "library"
+			hashed = hashlib.md5(dataBase_password.encode())
+			dataBase_password = hashed.hexdigest()
+			db.insert("INSERT INTO Erabiltzailea VALUES (?, ?, ?, ?, ?, ?, ?)", (self.MailKontua, self.SortzaileMailKontua, self.Izena, self.Abizena, dataBase_password, self.Rola, self.lagunakOnartzekoAukera))
+			return True
+		else:
+			return False

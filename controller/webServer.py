@@ -1,5 +1,6 @@
+from model import User
 from .LibraryController import LibraryController
-from flask import Flask, render_template, request, make_response, redirect
+from flask import Flask, render_template, request, make_response, redirect, url_for
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
 app.jinja_env.globals.update(zip=zip) # Añadir esta línea
@@ -92,3 +93,24 @@ def logout():
 		request.user.delete_session(request.user.token)
 		request.user = None
 	return resp
+
+
+@app.route('/erabiltzaileaSortu', methods=['GET', 'POST'])
+def erabiltzaileaSortu():
+	if request.method == 'POST':
+		MailKontua = request.form.get("email")
+		SortzaileMailKontua = request.user.MailKontua
+		Izena = request.form.get("izena")
+		Abizena = request.form.get("abizena")
+		Pasahitza = request.form.get("password")
+		Rola = "erab"
+		lagunakOnartzekoAukera = "0"
+
+		user = User(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola, lagunakOnartzekoAukera)
+
+		if user.new_user():
+			# Si el usuario se crea correctamente, redirigir a la página catalogue.html
+			return redirect(url_for('catalogue'))
+
+	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+	return render_template('erabiltzaileaSortu.html')

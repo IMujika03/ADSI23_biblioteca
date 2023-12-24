@@ -12087,4 +12087,13 @@ textarea.form-control-lg {
     width: 80%;
 }
 
+/* erabiltzaileaSortu */
+#erabiltzaileaSortu{
+    margin-bottom: 30px;
+}
+
+#erabiltzaileaSortuAbizena{
+    margin-left: 10px;
+}
+
 /*# sourceMappingURL=bootstrap.css.map */

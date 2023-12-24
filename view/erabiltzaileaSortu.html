@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container p-5 my-5 border">
+    <h2 id="erabiltzaileaSortu">Erabiltzailea sortu</h2>
+    <form class="form-inline" method="POST">
+      <!-- Izena, Abizena input -->
+      <div class="input-group mb-2 mr-sm-2">
+          <label class="col-sm-2 col-form-label" for="izena">Izena</label>
+          <input type="text" id="izena" name="izena" class="form-control mb-2" />
+          <label class="col-sm-2 col-form-label" id="erabiltzaileaSortuAbizena" for="abizena">Abizena</label>
+          <input type="text" id="abizena" name="abizena" class="form-control mb-2" />
+      </div>
+
+      <!-- Email input -->
+      <div class="input-group mb-2 mr-sm-2">
+          <label class="col-sm-2 col-form-label" for="email">Email kontua</label>
+          <input type="email" id="email" name="email" class="form-control mb-2" />
+      </div>
+
+      <!-- Password input -->
+      <div class="input-group mb-2 mr-sm-2">
+          <label class="col-sm-2 col-form-label" for="password">Pasahitza</label>
+          <input type="password" id="password" name="password" class="form-control mb-2" />
+      </div>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary btn-block mb-4">Sortu</button>
+
+
+    </form>
+</div>
+{% endblock %}
