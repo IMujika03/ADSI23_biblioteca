@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container p-5 my-5 border">
+    <h1>Aukerak</h1>
+    <form method="POST">
+    {% if lagunAukera==0 %}
+        <input type="submit" id="aldatu1era" name="aldatu1era" value="Lagunak onartu" style="border-radius: 5px; background-color: blue; color: white; margin: 10px">
+        <h5 style="margin:5px">Momentu honetan ez dituzu onartzen lagunak, kontrakoa nahi baduzu, pultsatu botoia</h5>
+    {% else %}
+        <input type="submit" id="aldatu0ra" name="aldatu0ra" value="Lagunak ez onartu" style="border-radius: 5px; background-color: blue; color: white; margin: 10px">
+        <h5 style="margin:5px">Momentu honetan lagunak onartzen dituzu, kontrakoa nahi baduzu, pultsatu botoia</h5>
+    {% endif %}
+    </form>
+</div>
+
+{% endblock %}
