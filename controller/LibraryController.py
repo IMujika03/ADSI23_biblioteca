@@ -93,3 +93,17 @@ class LibraryController:
 				FROM Session s
 			""")
 		return res[0][0]
+	def lagunakAukera(self, email):
+		res = db.select("""
+				SELECT e.lagunakOnartzekoAukera
+				FROM Erabiltzailea e
+				WHERE MailKontua = ? 
+				""", (email,))
+		return res[0][0]
+	def aldatu1era(self,email):
+
+		db.update("UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = ?",(email,))
+
+	def aldatu0ra(self,email):
+
+		db.update("UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = ?",(email,))
