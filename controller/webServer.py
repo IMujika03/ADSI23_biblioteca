@@ -62,6 +62,10 @@ def aukerak():
     lagunAukera = library.lagunakAukera(email=email)
     return render_template('aukerak.html', lagunAukera=lagunAukera)
 
+@app.route('/eskaerak')
+def eskaerak():
+	return render_template('eskaerak.html')
+
 @app.route('/catalogue')
 def catalogue():
 	title = request.values.get("title", "")
