@@ -139,5 +139,30 @@ for author, title, cover, description in libros:
 	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",(title, author, cover, description.strip()))
 
 con.commit()
+
+###Insert kopiak
+kopiak_path = os.path.join(fitx_izen, "..", "kopiak.json")
+with open(kopiak_path, 'r') as k:
+	kopiak = json.load(k)['kopiak']
+for kopia in kopiak:
+	cur.execute(f"""INSERT OR REPLACE INTO Liburu_Kopiak VALUES ('{kopia['KopiaID']}','{kopia['LiburuID']}')""")
+con.commit()
+
+###Insert erreserbak
+erreserbak_path = os.path.join(fitx_izen, "..", "erreserbak.json")
+with open(erreserbak_path, 'r') as e:
+	erreserbak = json.load(e)['erreserbak']
+for erreserba in erreserbak:
+	cur.execute(f"""INSERT OR REPLACE INTO Erreserbatua VALUES('{erreserba['Erabiltzailea']}','{erreserba['Data1']}','{erreserba['LiburuKopia']}','{erreserba['EntregatzeData']}','{erreserba['Kantzelatuta']}')""")
+con.commit()
+
+###Insert erreseinak
+erreseinak_path = os.path.join(fitx_izen, "..", "erreseinak.json")
+with open(erreseinak_path, 'r') as er:
+	erreseinak = json.load(er)['erreseinak']
+for erreseina in erreseinak:
+	cur.execute(f"""INSERT OR REPLACE INTO Erreseina VALUES('{erreseina['Liburua']}','{erreseina['Erabiltzailea']}','{erreseina['Puntuaketa']}','{erreseina['Komentarioa']}')""")
+con.commit()
+
 con.close()
 
