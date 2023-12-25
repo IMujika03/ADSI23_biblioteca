@@ -3,9 +3,11 @@
 {% block content %}
 
 <div class="check-btn-container" style="display: flex; flex-direction: column; align-items: flex-end;">
-  <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
-    <img src="https://www.svgrepo.com/show/522270/settings.svg" alt="Aukerak" width="32" height="32">
-  </button>
+    <a href="/aukerak" class="nav-link {% if request.path == '/aukerak' %}active{% endif %}">
+      <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
+        <img src="https://www.svgrepo.com/show/522270/settings.svg" alt="Aukerak" width="32" height="32">
+      </button>
+    </a>
   <div style="margin: 10px; font-weight: bold; margin-top: -25px;">Aukerak</div>
 </div>
 <h2>Erreserbak</h2>
