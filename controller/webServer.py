@@ -33,9 +33,16 @@ def add_cookies(response):
 def index():
 	return render_template('index.html')
 
+def redirectNoAdmin(url1, url2):
+	if 'user' in request.__dict__ and request.user and request.user.token:
+		if request.user.Rola == "admin":
+			return render_template(url1)
+	return redirect(url_for(url2))
+
 @app.route('/besteak')
 def besteak():
-	return render_template('besteak.html')
+	return redirectNoAdmin("besteak.html", "login")
+
 @app.route('/pertsonala')
 def pertsonala():
 	page = int(request.values.get("page", 1))
@@ -113,4 +120,18 @@ def erabiltzaileaSortu():
 			return redirect(url_for('catalogue'))
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
-	return render_template('erabiltzaileaSortu.html')
+	return redirectNoAdmin("erabiltzaileaSortu.html", "login")
+
+@app.route('/erabiltzaileaEzabatu', methods=['GET', 'POST'])
+def erabiltzaileaEzabatu():
+	if request.method == 'POST':
+		MailKontua = request.form.get("email")
+
+		user = User(MailKontua, None, None, None, None, None, None)
+
+		if user.delete_user():
+			# Si el usuario se elimina correctamente, redirigir a la página catalogue.html
+			return redirect(url_for('catalogue'))
+
+	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+	return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
