@@ -84,12 +84,28 @@ def catalogue():
 
 @app.route('/liburua')
 def liburua():
-	title = request.values.get("title", "")
-	author = request.values.get("author", "")
-	page = int(request.values.get("page", 1))
-	liburua = library.search_books(title=title, author=author, page=page - 1)
-	return render_template('liburuBista.html', book=liburua)
+	book_id = request.values.get("id", "")
+	liburua = library.aurkitu_liburua(book_id)
+	if liburua:
+		print(f"Liburuaren datuak: {liburua}")
+		related_books = library.get_related_books_by_author(book_id)
+		return render_template('liburuBista.html', book=liburua, related_books=related_books)
+	else:
+		print(f" ID hau duen liburua ez da aurkitu: {book_id}")
+		return render_template('error.html', message="Ez da liburua aurkitu")
 
+#@app.route('/liburua_relazionatua/<book_id>')
+#def liburua_relazionatua(book_id):
+ #   if book_id:
+  #      liburua = library.aurkitu_liburua(book_id)
+
+   #     if liburua is not None:
+		#        related_books = library.get_related_books(book_id)
+	#     return render_template('liburuBista.html', book=liburua, other_books=related_books)
+		#  else:
+	#    return render_template('error.html', message="Libro no encontrado")
+	#else:
+# return render_template('error.html', message="ID de libro no proporcionado")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if 'user' in dir(request) and request.user and request.user.token:

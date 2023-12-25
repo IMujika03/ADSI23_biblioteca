@@ -14,7 +14,6 @@ class LibraryController:
 		return cls.__instance
 
 
-
 	def search_books(self, title="", author="", limit=6, page=0):
 		count = db.select("""
 				SELECT count() 
@@ -34,6 +33,45 @@ class LibraryController:
 			for b in res
 		]
 		return books, count
+
+	def aurkitu_liburua(self, book_id):
+		try:
+			lib = db.select("SELECT * FROM Liburua WHERE Kodea = ?", (book_id))
+			if lib:
+				#return {
+				#	'Kodea': lib[0],
+				#	'Izenburua': lib[1],
+				#	'Egilea': lib[2],
+				#	'Portada': lib[3],
+				#	'Deskribapena': lib[4]
+				#}
+				return Book(lib[0][0],lib[0][1],lib[0][2],lib[0][3],lib[0][4])
+			else:
+				return None
+		except Exception as e:
+			print(f"Errorea aurkitu_liburua: {e}")
+			return None
+	def lortu_liburu_guztiak(self):
+		res = db.select("SELECT l.* FROM Liburua l")
+		books = [
+			Book(b[0], b[1], b[2], b[3], b[4])
+			for b in res
+		]
+		return books
+	def get_related_books_by_author(self,book_id, limit=3):
+
+		# Obtener el autor del libro actual
+		current_book = self.aurkitu_liburua(book_id)
+		author = current_book.author if current_book else None
+		print(f"{author}")
+		if author:
+			# Obtener libros del mismo autor (excluyendo el libro actual)
+			related_books = [book for book in self.lortu_liburu_guztiak() if book.author == author and str(book.id) != (book_id)]
+
+			# Limitar la cantidad de libros relacionados
+			return related_books[:limit]
+
+		return []
 
 	def get_user(self, email, password):
 		emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
