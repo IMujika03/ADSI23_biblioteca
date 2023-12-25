@@ -51,6 +51,16 @@ def pertsonala():
 	total_pages = (nb_erreserbak//6)+1
 	return render_template('pertsonala.html', erreserbak=erreserbak, lib_info=lib_info, current_page=page,
 						   total_pages=total_pages, max=max, min=min)
+	
+@app.route('/aukerak', methods=['GET', 'POST'])
+def aukerak():
+    email = library.aurkituSaioaDuenErab()
+    if "aldatu1era" in request.values:
+        library.aldatu1era(email)
+    elif "aldatu0ra" in request.values:
+        library.aldatu0ra(email)
+    lagunAukera = library.lagunakAukera(email=email)
+    return render_template('aukerak.html', lagunAukera=lagunAukera)
 
 @app.route('/catalogue')
 def catalogue():
