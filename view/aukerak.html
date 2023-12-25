@@ -11,9 +11,9 @@
     {% else %}
         <input type="submit" id="aldatu0ra" name="aldatu0ra" value="Lagunak ez onartu" style="border-radius: 5px; background-color: blue; color: white; margin: 10px">
         <h5 style="margin:5px">Momentu honetan lagunak onartzen dituzu, kontrakoa nahi baduzu, pultsatu botoia</h5>
+        <a href ="/eskaerak" class="nav-link {% if request.path == '/eskaerak' %}active{% endif %}" style='color: blue; margin:20px'>Eskaerak kudeatu</a>
     {% endif %}
     </form>
-    <a href ="/eskaerak" class="nav-link {% if request.path == '/eskaerak' %}active{% endif %}" style='color: blue; margin:20px'>Eskaerak kudeatu</a>
 </div>
 
 {% endblock %}

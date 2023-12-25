@@ -77,6 +77,7 @@ cur.execute("""
 	CREATE TABLE IF NOT EXISTS LagunEgin(
 		Erabiltzailea1 varchar,
 		Erabiltzailea2 varchar,
+		Egoera integer,
 		PRIMARY KEY(Erabiltzailea1, Erabiltzailea2),
 		FOREIGN KEY (Erabiltzailea1) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (Erabiltzailea2) REFERENCES Erabiltzailea(MailKontua)

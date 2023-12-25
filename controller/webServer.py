@@ -62,9 +62,15 @@ def aukerak():
     lagunAukera = library.lagunakAukera(email=email)
     return render_template('aukerak.html', lagunAukera=lagunAukera)
 
-@app.route('/eskaerak')
+@app.route('/eskaerak', methods=['GET', 'POST'])
 def eskaerak():
-	return render_template('eskaerak.html')
+	email=library.aurkituSaioaDuenErab()
+	if "onartu" in request.values:
+		library.onartu(email, request.values.get("korreoa"))
+	elif "ezeztatu" in request.values:
+		library.ezeztatu(email, request.values.get("korreoa"))
+	erabiltzaileLista = library.lagunPosibleakLortu(email)
+	return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
 
 @app.route('/catalogue')
 def catalogue():

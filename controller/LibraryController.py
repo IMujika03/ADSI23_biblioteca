@@ -107,3 +107,29 @@ class LibraryController:
 	def aldatu0ra(self,email):
 
 		db.update("UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = ?",(email,))
+
+	def lagunPosibleakLortu(self, email):
+		res = db.select("""
+	        SELECT e.MailKontua
+	        FROM Erabiltzailea e
+	        WHERE e.lagunakOnartzekoAukera LIKE 1
+	        AND e.MailKontua != ? -- Excluye el propio correo
+	        AND e.MailKontua NOT IN (
+	            SELECT l.Erabiltzailea1
+	            FROM lagunEgin l
+	            WHERE l.Erabiltzailea2 = ?
+	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
+	            UNION
+	            SELECT l.Erabiltzailea2
+	            FROM lagunEgin l
+	            WHERE l.Erabiltzailea1 = ?
+	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
+	        )
+	    """, (email, email, email))
+		return res
+
+	def onartu(self,email1,email2):
+		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+
+	def ezeztatu(self,email1,email2):
+		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
