@@ -1,0 +1,16 @@
+{
+  "erreseinak": [
+    {
+      "Liburua": 1,
+      "Erabiltzailea": "james@gmail.com",
+      "Puntuaketa": 3,
+      "Komentarioa": "Liburu ona, baina, pertsonaiak txarrak"
+    },
+    {
+      "Liburua": 2,
+      "Erabiltzailea": "james@gmail.com",
+      "Puntuaketa": 5,
+      "Komentarioa": "Liburua dibertigarria da eta pertsonaiak oso ondo daude idatzita."
+    }
+  ]
+}

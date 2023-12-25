@@ -1,0 +1,40 @@
+{
+  "kopiak": [
+    {
+      "KopiaID": "1",
+      "LiburuID": "1"
+    },
+    {
+      "KopiaID": "2",
+      "LiburuID": "1"
+    },
+    {
+      "KopiaID": "3",
+      "LiburuID": "2"
+    },
+    {
+      "KopiaID": "2",
+      "LiburuID": "2"
+    },
+    {
+      "KopiaID": "5",
+      "LiburuID": "8"
+    },
+    {
+      "KopiaID": "6",
+      "LiburuID": "12"
+    },
+    {
+      "KopiaID": "7",
+      "LiburuID": "20"
+    },
+    {
+      "KopiaID": "8",
+      "LiburuID": "25"
+    },
+    {
+      "KopiaID": "9",
+      "LiburuID": "33"
+    }
+  ]
+}
