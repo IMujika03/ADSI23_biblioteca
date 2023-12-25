@@ -36,7 +36,7 @@ class LibraryController:
 
 	def aurkitu_liburua(self, book_id):
 		try:
-			lib = db.select("SELECT * FROM Liburua WHERE Kodea = ?", (book_id))
+			lib = db.select("SELECT * FROM Liburua WHERE Kodea = ?", (book_id,))
 			if lib:
 				#return {
 				#	'Kodea': lib[0],
