@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 class TestAukerak(BaseTestClass):
 
     def test_lagun_aukera_gaitu(self):
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = 'james@gmail.com'")  # Aukera jarri 0-ra test-ak errepikatu ahal izateko
         self.login('james@gmail.com', '123456')#Erabiltzaile honek, berez, ez du aukera gaituta
         res = self.client.get('/aukerak')
         self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
@@ -19,9 +21,9 @@ class TestAukerak(BaseTestClass):
         #Berriz exekutatzen bada test-a ez da ondo aterako, erabiltzaile honen lagunakOnartzekoAukera gaituta dagoelako orain.
         res = self.db.select(f"SELECT lagunakOnartzekoAukera FROM Erabiltzailea WHERE mailKontua='james@gmail.com'")
         self.assertEqual(1, res[0][0])#Aukera gaituta dagoela konprobatu
-        self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = 'james@gmail.com'")#Aukera berriro jarri 0-ra test-ak errepikatu ahal izateko
-
     def test_lagun_aukera_ezgaitu(self):
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")  # Hasierako egoerara bueltatu test-a berriro exekuta ahal izateko
         self.login('jhon@gmail.com', '123') #Erabiltzaile honek, berez, aukera gaituta du
         res = self.client.get('/aukerak')
         page = BeautifulSoup(res.data, features="html.parser")
@@ -34,4 +36,3 @@ class TestAukerak(BaseTestClass):
         self.assertEqual('Momentu honetan ez dituzu onartzen lagunak, kontrakoa nahi baduzu, pultsatu botoia', mezua)#Botoia pultsatu ondoren, lagunak ez dituela onartzen agertzen da
         res = self.db.select(f"SELECT lagunakOnartzekoAukera FROM Erabiltzailea WHERE mailKontua='jhon@gmail.com'")
         self.assertEqual(0, res[0][0])  # Aukera ez dagoela gaituta konprobatu
-        self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'") #Hasierako egoerara bueltatu test-a berriro exekuta ahal izateko
