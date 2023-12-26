@@ -111,13 +111,16 @@ def erreserbatu_liburua():
 		book_id = request.form.get('libro_id') # ese libro id no se que hay que poner
 		disponible = library.erabilgarri_dago(book_id)
 		if disponible:
-			library.erreserbatu_liburua(book_id,request.user.MailKontua)
-			print(f"Liburua erreserbatuta!: {disponible}")
+			mailKontua = request.user.MailKontua
+			print(f"mail : {type(mailKontua)}")
+			print(f" hau da mail kontua: {mailKontua}")
+			library.erreserbatu_liburua(book_id,mailKontua)
+			#print(f"Liburua erreserbatuta!: {disponible}")
 		else:
 			print(f"Ezin izan da liburua erreserbatu") # que salte un mensaje en la pantalla
 		return redirect('/catalogue')
 	except Exception as e:
-		print(f"Errorea liburua erreserbatzean: {e}")
+		print(f"Errorea liburua erreserbatzeko prozesuan: {e}")
 		return redirect('/catalogue')
 	#<input type="hidden" name="mail_kontua" value="{{user.MailKontua}}">
 @app.route('/login', methods=['GET', 'POST'])

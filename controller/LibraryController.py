@@ -1,7 +1,7 @@
 from model import Connection, Book, User
 from model.Erreserbatuta import Erreserbatuta
 from model.tools import hash_password
-
+import datetime
 db = Connection()
 
 class LibraryController:
@@ -38,13 +38,6 @@ class LibraryController:
 		try:
 			lib = db.select("SELECT * FROM Liburua WHERE Kodea = ?", (book_id,))
 			if lib:
-				#return {
-				#	'Kodea': lib[0],
-				#	'Izenburua': lib[1],
-				#	'Egilea': lib[2],
-				#	'Portada': lib[3],
-				#	'Deskribapena': lib[4]
-				#}
 				return Book(lib[0][0],lib[0][1],lib[0][2],lib[0][3],lib[0][4])
 			else:
 				return None
@@ -79,23 +72,33 @@ class LibraryController:
 				kopia_id = kopia[0]
 				info_erreserba = db.select("SELECT * FROM Erreserbatua WHERE LiburuKopia = ? AND (EntregatzeData IS NULL AND Kantzelatuta = 0)",(kopia_id,))
 				if not info_erreserba:
-					return
+					return True
 			return False
 		except Exception as e:
 			print(f"Errorea erabilgarri_dago: {e}")
 			return False
 	def erreserbatu_liburua(self,book_id,mailKontua):
 		try:
-			if not self.erabilgarri_dago(book_id)
+			if not self.erabilgarri_dago(book_id):
 				return False
-			lib_kopiak = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ?", (book_id,))
-			for kopia in lib_kopiak:
-				kopia_id = kopia[0]
-				info_erreserba = db.select(
-					"SELECT * FROM Erreserbatua WHERE LiburuKopia = ? AND (EntregatzeData IS NULL OR Kantzelatuta = 1)",
-					(kopia_id,))
-				if not info_erreserba:
-					return True
+			kopia_erabilgarria = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ? AND KopiaID NOT IN (SELECT LiburuKopia FROM Erreserbatua WHERE Kantzelatuta = 0 OR EntregatzeData IS NULL) LIMIT 1", (book_id,))
+			if not kopia_erabilgarria:
+				return False  # No se encontró una copia disponible
+
+			id_libKopia = kopia_erabilgarria[0]
+
+			# Realizar la reserva en la base de datos
+			#current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+			db.insert(
+				"INSERT INTO Erreserbatua (Erabiltzailea, Data1, LiburuKopia, EntregatzeData, Kantzelatuta) VALUES (?, CURRENT_DATE, ?, NULL, 0)",
+				(mailKontua, id_libKopia)
+			)
+			print(f"erreserba ondo eginda: {kopia_erabilgarria}")
+			return True  # Reserva exitosa
+
+		except Exception as e:
+			print(f"Errorea liburua erreserbatzean: {e}")
+			return False  # Error durante la reserva
 	def get_user(self, email, password):
 		emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
 		if len(emaitza) > 0:
