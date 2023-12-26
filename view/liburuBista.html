@@ -14,15 +14,18 @@
         <p class="card-text">{{book.description}}</p>
         {% endif %}
         <div class="d-flex justify-content-between">
-          <button class="btn btn-primary" onclick="reservarLibro()">ERRESERBATU</button>
+           <form id="reserbaForm" action="{{ url_for('erreserbatu_liburua') }}" method="POST">
+            <input type="hidden" name="libro_id" value="{{book.id}}">
+            <button type="submit" class="btn btn-primary">ERRESERBATU</button>
+          </form>
           <a href="{{ url_for('catalogue') }}" class="btn btn-secondary">ATZERA</a>
         </div>
       </div>
     </div>
   </div>
-
+  {% if related_books %}
     <div class="row mt-5">
-        <h3>Antzekoak</h3>
+        <h3> Intereseko Autorearen liburuak</h3>
         {% for related_book in related_books %}
             <div class="col-lg-4 col-md-6 col-sm-12 my-2">
                 <div class="card d-flex flex-row" style="width: 22rem;">
@@ -40,6 +43,7 @@
             </div>
         {% endfor %}
     </div>
+  {% endif %}
 </div>
 
 

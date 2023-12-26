@@ -1,6 +1,6 @@
 from model import User
 from .LibraryController import LibraryController
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, make_response, redirect, url_for, jsonify
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
 app.jinja_env.globals.update(zip=zip) # Añadir esta línea
@@ -102,18 +102,24 @@ def liburua():
 		print(f" ID hau duen liburua ez da aurkitu: {book_id}")
 		return render_template('error.html', message="Ez da liburua aurkitu")
 
-#@app.route('/liburua_relazionatua/<book_id>')
-#def liburua_relazionatua(book_id):
- #   if book_id:
-  #      liburua = library.aurkitu_liburua(book_id)
-
-   #     if liburua is not None:
-		#        related_books = library.get_related_books(book_id)
-	#     return render_template('liburuBista.html', book=liburua, other_books=related_books)
-		#  else:
-	#    return render_template('error.html', message="Libro no encontrado")
-	#else:
-# return render_template('error.html', message="ID de libro no proporcionado")
+@app.route('/erreserbatu', methods=['POST'])
+def erreserbatu_liburua():
+	try:
+		if 'user' not in dir(request) or not request.user or not request.user.token:
+			#Erabiltzailea ez dago identifikatuta
+			return redirect('/login')
+		book_id = request.form.get('libro_id') # ese libro id no se que hay que poner
+		disponible = library.erabilgarri_dago(book_id)
+		if disponible:
+			library.erreserbatu_liburua(book_id,request.user.MailKontua)
+			print(f"Liburua erreserbatuta!: {disponible}")
+		else:
+			print(f"Ezin izan da liburua erreserbatu") # que salte un mensaje en la pantalla
+		return redirect('/catalogue')
+	except Exception as e:
+		print(f"Errorea liburua erreserbatzean: {e}")
+		return redirect('/catalogue')
+	#<input type="hidden" name="mail_kontua" value="{{user.MailKontua}}">
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if 'user' in dir(request) and request.user and request.user.token:
