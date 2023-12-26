@@ -125,14 +125,6 @@ class LibraryController:
 		            WHERE k.KopiaID = ?
 		            """, (kopia_id,))
 		return res[0]
-	def aurkituSaioaDuenErab(self):
-		res = db.select("""
-				SELECT s.user_id
-				FROM Session s
-				ORDER BY s.last_login DESC
-				LIMIT 1
-			""")
-		return res[0][0]
 	def lagunakAukera(self, email):
 		res = db.select("""
 				SELECT e.lagunakOnartzekoAukera
