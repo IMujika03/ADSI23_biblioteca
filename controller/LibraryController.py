@@ -72,7 +72,30 @@ class LibraryController:
 			return related_books[:limit]
 
 		return []
-
+	def erabilgarri_dago(self,book_id):
+		try:
+			lib_kopiak = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ?", (book_id,))
+			for kopia in lib_kopiak:
+				kopia_id = kopia[0]
+				info_erreserba = db.select("SELECT * FROM Erreserbatua WHERE LiburuKopia = ? AND (EntregatzeData IS NULL AND Kantzelatuta = 0)",(kopia_id,))
+				if not info_erreserba:
+					return
+			return False
+		except Exception as e:
+			print(f"Errorea erabilgarri_dago: {e}")
+			return False
+	def erreserbatu_liburua(self,book_id,mailKontua):
+		try:
+			if not self.erabilgarri_dago(book_id)
+				return False
+			lib_kopiak = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ?", (book_id,))
+			for kopia in lib_kopiak:
+				kopia_id = kopia[0]
+				info_erreserba = db.select(
+					"SELECT * FROM Erreserbatua WHERE LiburuKopia = ? AND (EntregatzeData IS NULL OR Kantzelatuta = 1)",
+					(kopia_id,))
+				if not info_erreserba:
+					return True
 	def get_user(self, email, password):
 		emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
 		if len(emaitza) > 0:
