@@ -24,9 +24,9 @@ class TestProfila(BaseTestClass):
         res = self.client.get('/pertsonala')
         page = BeautifulSoup(res.data, features="html.parser")
         valoraciones = page.select('div.valoracion')
-        erreseina = valoraciones[2].getText().strip().replace('\n', '')#hutsune zuriak ezabatu konprobazioa ondo egiteko
+        erreseina = valoraciones[2].getText().strip().replace('\n', '')#hutsune zuriak ezabatu, konprobazioa ondo egiteko
         self.assertEqual('Liburu ona, baina, pertsonaiak txarrak', erreseina)#Erreseinak ondo agertzen direla ikusten da
-    def test_ikusi_erreserbarik_ez(self): #Funciona bien, pero, solo si se ejecutan de uno en uno
+    def test_ikusi_erreserbarik_ez(self):
         self.login('ejemplo2@gmail.com', '123456')
         res2 = self.client.get('/pertsonala')
         page2 = BeautifulSoup(res2.data, features="html.parser")
