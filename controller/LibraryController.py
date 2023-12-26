@@ -81,7 +81,7 @@ class LibraryController:
 		try:
 			if not self.erabilgarri_dago(book_id):
 				return False
-			kopia_erabilgarria = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ? AND KopiaID NOT IN (SELECT LiburuKopia FROM Erreserbatua WHERE Kantzelatuta = 0 OR EntregatzeData IS NULL) LIMIT 1", (book_id,))
+			kopia_erabilgarria = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ? AND KopiaID NOT IN (SELECT LiburuKopia FROM Erreserbatua WHERE Kantzelatuta = 0 AND EntregatzeData IS NULL) LIMIT 1", (book_id,))
 			if not kopia_erabilgarria:
 				return False  # No se encontró una copia disponible
 
@@ -89,10 +89,10 @@ class LibraryController:
 
 			# Realizar la reserva en la base de datos
 			#current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+			print(f"hau da kontua: {mailKontua}")
 			db.insert(
 				"INSERT INTO Erreserbatua (Erabiltzailea, Data1, LiburuKopia, EntregatzeData, Kantzelatuta) VALUES (?, CURRENT_DATE, ?, NULL, 0)",
-				(mailKontua, id_libKopia)
-			)
+				(mailKontua, id_libKopia),)
 			print(f"erreserba ondo eginda: {kopia_erabilgarria}")
 			return True  # Reserva exitosa
 
