@@ -67,7 +67,7 @@ class LibraryController:
 		return []
 	def erabilgarri_dago(self,book_id):
 		try:
-			lib_kopiak = db.select("SELECT * FROM Liburu_Kopiak WHERE LiburuID = ?", (book_id,))
+			lib_kopiak = db.select("SELECT KopiaID FROM Liburu_Kopiak WHERE LiburuID = ?", (book_id,))
 			for kopia in lib_kopiak:
 				kopia_id = kopia[0]
 				info_erreserba = db.select("SELECT * FROM Erreserbatua WHERE LiburuKopia = ? AND (EntregatzeData IS NULL AND Kantzelatuta = 0)",(kopia_id,))
