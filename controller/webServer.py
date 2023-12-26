@@ -57,24 +57,29 @@ def pertsonala():
 	
 @app.route('/aukerak', methods=['GET', 'POST'])
 def aukerak():
-    email = library.aurkituSaioaDuenErab()
-    if "aldatu1era" in request.values:
-        library.aldatu1era(email)
-    elif "aldatu0ra" in request.values:
-        library.aldatu0ra(email)
-    lagunAukera = library.lagunakAukera(email=email)
-    return render_template('aukerak.html', lagunAukera=lagunAukera)
+	if 'user' in request.__dict__ and request.user and request.user.token:
+		email = request.user.MailKontua
+		if "aldatu1era" in request.values:
+			library.aldatu1era(email)
+		elif "aldatu0ra" in request.values:
+			library.aldatu0ra(email)
+		lagunAukera = library.lagunakAukera(email=email)
+		return render_template('aukerak.html', lagunAukera=lagunAukera)
+	else:
+		return redirect('/login')#Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
 
 @app.route('/eskaerak', methods=['GET', 'POST'])
 def eskaerak():
-	email=library.aurkituSaioaDuenErab()
-	if "onartu" in request.values:
-		library.onartu(email, request.values.get("korreoa"))
-	elif "ezeztatu" in request.values:
-		library.ezeztatu(email, request.values.get("korreoa"))
-	erabiltzaileLista = library.lagunPosibleakLortu(email)
-	return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
-
+	if 'user' in request.__dict__ and request.user and request.user.token:
+		email = request.user.MailKontua
+		if "onartu" in request.values:
+			library.onartu(email, request.values.get("korreoa"))
+		elif "ezeztatu" in request.values:
+			library.ezeztatu(email, request.values.get("korreoa"))
+		erabiltzaileLista = library.lagunPosibleakLortu(email)
+		return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
+	else:
+		return redirect('/login')#Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
 @app.route('/catalogue')
 def catalogue():
 	title = request.values.get("title", "")
