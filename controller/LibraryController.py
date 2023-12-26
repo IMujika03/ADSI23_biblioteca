@@ -85,7 +85,7 @@ class LibraryController:
 			if not kopia_erabilgarria:
 				return False  # No se encontró una copia disponible
 
-			id_libKopia = kopia_erabilgarria[0]
+			id_libKopia = kopia_erabilgarria[0][0]
 
 			# Realizar la reserva en la base de datos
 			#current_date = datetime.datetime.now().strftime("%Y-%m-%d")

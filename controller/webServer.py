@@ -108,17 +108,18 @@ def erreserbatu_liburua():
 		if 'user' not in dir(request) or not request.user or not request.user.token:
 			#Erabiltzailea ez dago identifikatuta
 			return redirect('/login')
-		book_id = request.form.get('libro_id') # ese libro id no se que hay que poner
-		disponible = library.erabilgarri_dago(book_id)
-		if disponible:
-			mailKontua = request.user.MailKontua
-			print(f"mail : {type(mailKontua)}")
-			print(f" hau da mail kontua: {mailKontua}")
-			library.erreserbatu_liburua(book_id,mailKontua)
-			#print(f"Liburua erreserbatuta!: {disponible}")
 		else:
-			print(f"Ezin izan da liburua erreserbatu") # que salte un mensaje en la pantalla
-		return redirect('/catalogue')
+			book_id = request.form.get('libro_id') # ese libro id no se que hay que poner
+			disponible = library.erabilgarri_dago(book_id)
+			if disponible:
+				mailKontua = request.user.MailKontua
+				print(f"mail : {type(mailKontua)}")
+				print(f" hau da mail kontua: {mailKontua}")
+				library.erreserbatu_liburua(book_id,mailKontua)
+				#print(f"Liburua erreserbatuta!: {disponible}")
+			else:
+				print(f"Ezin izan da liburua erreserbatu") # que salte un mensaje en la pantalla
+			return redirect('/catalogue')
 	except Exception as e:
 		print(f"Errorea liburua erreserbatzeko prozesuan: {e}")
 		return redirect('/catalogue')
