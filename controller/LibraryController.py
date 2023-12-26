@@ -129,6 +129,8 @@ class LibraryController:
 		res = db.select("""
 				SELECT s.user_id
 				FROM Session s
+				ORDER BY s.last_login DESC
+				LIMIT 1
 			""")
 		return res[0][0]
 	def lagunakAukera(self, email):

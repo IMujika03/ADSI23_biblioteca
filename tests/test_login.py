@@ -23,7 +23,7 @@ class TestLogin(BaseTestClass):
 		time = float([x.split("=")[1].split(";")[0] for x in res.headers.values() if 'time' in x][0])
 		res = self.db.select(f"SELECT user_id FROM Session WHERE session_hash='{token}' AND last_login={time}")
 		self.assertEqual(1, len(res))
-		self.assertEqual(2, res[0][0])
+		self.assertEqual("jhon@gmail.com", res[0][0])
 		res2 = self.client.get('/')
 		page = BeautifulSoup(res2.data, features="html.parser")
 		self.assertEqual('Jhon Doe', page.find('header').find('ul').find_all('li')[-2].get_text())
