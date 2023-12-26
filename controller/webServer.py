@@ -46,11 +46,14 @@ def besteak():
 @app.route('/pertsonala')
 def pertsonala():
 	page = int(request.values.get("page", 1))
-	email = library.aurkituSaioaDuenErab()
-	erreserbak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page-1)
-	total_pages = (nb_erreserbak//6)+1
-	return render_template('pertsonala.html', erreserbak=erreserbak, lib_info=lib_info, current_page=page,
-						   total_pages=total_pages, max=max, min=min)
+	if 'user' in request.__dict__ and request.user and request.user.token:
+		email = request.user.MailKontua
+		erreserbak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page-1)
+		total_pages = (nb_erreserbak//6)+1
+		return render_template('pertsonala.html', erreserbak=erreserbak, lib_info=lib_info, current_page=page,
+							   total_pages=total_pages, max=max, min=min)
+	else:
+		return redirect('/login')#Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
 	
 @app.route('/aukerak', methods=['GET', 'POST'])
 def aukerak():
