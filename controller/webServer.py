@@ -1,4 +1,3 @@
-from model import User
 from .LibraryController import LibraryController
 from flask import Flask, render_template, request, make_response, redirect, url_for, jsonify
 
@@ -100,8 +99,12 @@ def liburua():
 		return render_template('liburuBista.html', book=liburua, related_books=related_books)
 	else:
 		print(f" ID hau duen liburua ez da aurkitu: {book_id}")
-		return render_template('error.html', message="Ez da liburua aurkitu")
-
+		return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu", location='/catalogue')
+@app.route('/liburua')
+def liburua2():
+	book_id = request.values.get("id", "")
+	mail = request.user.MailKontua
+	erreserba = library.aurkitu_erreserba(book_id,mail)
 @app.route('/erreserbatu', methods=['POST'])
 def erreserbatu_liburua():
 	try:
@@ -116,14 +119,24 @@ def erreserbatu_liburua():
 				print(f"mail : {type(mailKontua)}")
 				print(f" hau da mail kontua: {mailKontua}")
 				library.erreserbatu_liburua(book_id,mailKontua)
+				return render_template('mezua.html', tituloa="Erreserbatuta", mezua="Aukeratutako liburua erreserbatu da", location='/catalogue')
 				#print(f"Liburua erreserbatuta!: {disponible}")
 			else:
 				print(f"Ezin izan da liburua erreserbatu") # que salte un mensaje en la pantalla
-			return redirect('/catalogue')
+				return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua erreserbatu", location='/catalogue')
 	except Exception as e:
 		print(f"Errorea liburua erreserbatzeko prozesuan: {e}")
 		return redirect('/catalogue')
-	#<input type="hidden" name="mail_kontua" value="{{user.MailKontua}}">
+#@app.route('/historiala', methods=['POST'])
+#def historiala_pantailaratu():
+#	try:
+#		if 'user' not in dir(request) or not request.user or not request.user.token:
+#			#Erabiltzailea ez dago identifikatuta
+#			return redirect('/login')
+#		else:
+#			mailKontua = request.user.MailKontua
+#			erreserba_Lista = library.lortuHistoriala(mailKontua)
+#			return render_template('historiala', historial=erreserba_Lista)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if 'user' in dir(request) and request.user and request.user.token:
@@ -167,10 +180,7 @@ def erabiltzaileaSortu():
 		Rola = "erab"
 		lagunakOnartzekoAukera = "0"
 
-		user = User(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola, lagunakOnartzekoAukera)
-
-		if user.new_user():
-			# Si el usuario se crea correctamente, redirigir a la página catalogue.html
+		if library.existitzenEzBadaSortu(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola, lagunakOnartzekoAukera):
 			return redirect(url_for('catalogue'))
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
@@ -181,10 +191,7 @@ def erabiltzaileaEzabatu():
 	if request.method == 'POST':
 		MailKontua = request.form.get("email")
 
-		user = User(MailKontua, None, None, None, None, None, None)
-
-		if user.delete_user():
-			# Si el usuario se elimina correctamente, redirigir a la página catalogue.html
+		if library.existitzenBadaEzabatu(MailKontua):
 			return redirect(url_for('catalogue'))
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
