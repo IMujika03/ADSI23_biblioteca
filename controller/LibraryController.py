@@ -201,10 +201,7 @@ class LibraryController:
 
 	def get_all_topics(self):
 		try:
-			res = db.select("""
-	            SELECT *
-	            FROM Gaia
-	        """)
+			res = db.select(""" SELECT * FROM Gaia """)
 			topics = [
 				Gaia(t[0], t[1], t[2], t[3],t[4])
 				for t in res
@@ -214,3 +211,31 @@ class LibraryController:
 			print(f"Errorea get_all_topics: {e}")
 			return []
 
+	def get_topic_by_id(self, topic_id):
+		try:
+			res = db.select("SELECT * FROM Gaia WHERE Izenburua = ?", (topic_id,))
+			if res:
+				return Gaia(res[0][0], res[0][1], res[0][2], res[0][3], res[0][4])
+			else:
+				return None
+		except Exception as e:
+			print(f"Errorea get_topic_by_id: {e}")
+			return None
+
+	def create_topic(self, izenburua, deskribapena, MailKontua):
+		try:
+			date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			db.insert("""
+	               INSERT INTO Gaia (Izenburua, MailKontua, Deskribapena, SortzeData)
+	               VALUES (?, ?, ?, ?)
+	           """, (izenburua, MailKontua, deskribapena, date))
+
+			# Recuperar y devolver el objeto Gaia recién creado
+			res = db.select("SELECT * FROM Gaia WHERE Izenburua = ?", (izenburua,))
+			if res:
+				return Gaia(res[0][0], res[0][1], res[0][2], res[0][3], res[0][4])
+			else:
+				return None
+		except Exception as e:
+			print(f"Errorea create_topic: {e}")
+			return None
