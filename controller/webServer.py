@@ -197,15 +197,28 @@ def erabiltzaileaEzabatu():
 	return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
 
 
+@app.route('/liburuaSartu', methods=['GET', 'POST'])
+def liburuaSartu():
+    if request.method == 'POST':
+        izenburua = request.form.get("izenburua")
+        egilea = request.form.get("egilea")
+        irudia = request.form.get("irudia")
+        deskribapena = request.form.get("deskribapena")
+
+        if library.existitzenEzBadaLiburuaSortu(izenburua, egilea, irudia, deskribapena):
+            return redirect(url_for('catalogue'))
+
+    # Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+    return redirectNoAdmin("liburuaSartu.html", "login")
+
+
 @app.route('/foroak',  methods=['GET', 'POST'])
 def foroak():
-	if 'user' in request.__dict__ and request.user and request.user.token:
-		topics=library.get_all_topics()
-		return render_template('foroak.html', Gaiak=topics)
-	else:
-		return redirect('/login')
-
-
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        topics = library.get_all_topics()
+        return render_template('foroak.html', Gaiak=topics)
+    else:
+        return redirect('/login')
 @app.route('/gaia')
 def gaia():
 	gaia_id = request.values.get("id", -1)

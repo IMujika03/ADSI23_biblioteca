@@ -284,3 +284,15 @@ class LibraryController:
 		print(erab.MailKontua, erab.SortzaileMailKontua, erab.Izena, erab.Abizena, erab.Pasahitza,
 			  erab.Rola, erab.lagunakOnartzekoAukera)
 		db.delete("DELETE FROM Erabiltzailea WHERE MailKontua = ?", (erab.MailKontua,))
+
+	def existitzenEzBadaLiburuaSortu(self, izenburua, egilea, irudia, deskribapena):
+		s = db.select("SELECT Kodea from Liburua WHERE Izenburua = ? AND Egilea = ? AND Portada = ? AND Deskribapena = ?", (izenburua, egilea, irudia, deskribapena))
+		if len(s) <= 0:
+			lib = Book(None, izenburua, egilea, irudia, deskribapena)
+			self.liburuaGehitu(lib)
+			return True
+		else:
+			return False
+
+	def liburuaGehitu(self, lib):
+		db.insert("INSERT INTO Liburua (Izenburua, Egilea, Portada, Deskribapena) VALUES (?, ?, ?, ?)", (lib.title, lib.author, lib.cover, lib.description))

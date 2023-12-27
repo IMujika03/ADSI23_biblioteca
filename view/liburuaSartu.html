@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container p-5 my-5 border">
+    <h2>Liburua sartu</h2>
+    <form class="form-inline" method="POST">
+
+        <!-- Izenburua input -->
+        <div class="form-group">
+            <label for="izenburua">Izenburua</label>
+            <input type="text" id="izenburua" name="izenburua" class="form-control" required>
+        </div>
+
+        <!-- Egilea input -->
+        <div class="form-group">
+            <label for="egilea">Egilea</label>
+            <input type="text" id="egilea" name="egilea" class="form-control" required>
+        </div>
+
+        <!-- Irudia input -->
+        <div class="form-group">
+            <label for="irudia">Irudia (url)</label>
+            <input type="text" id="irudia" name="irudia" class="form-control" required>
+        </div>
+
+        <!-- Deskribapena input -->
+        <div class="form-group">
+            <label for="deskribapena">Deskribapena</label>
+            <input type="textarea" id="deskribapena" name="deskribapena" class="form-control" required>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">Gorde Liburua</button>
+    </form>
+</div>
+{% endblock %}
