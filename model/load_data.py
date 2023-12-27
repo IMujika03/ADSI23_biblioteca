@@ -112,7 +112,7 @@ cur.execute("""
 		Data1 DATE,
 		LiburuKopia integer,
 		EntregatzeData DATE,
-		Kantzelatuta integer,
+		NoizEntregatuDa DATE,
 		PRIMARY KEY(Erabiltzailea,Data1,LiburuKopia),
 		FOREIGN KEY (Erabiltzailea) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (LiburuKopia) REFERENCES Liburu_Kopiak(KopiaID)
@@ -136,25 +136,32 @@ libros_path = os.path.join(fitx_izen,"..","libros.tsv")
 with open(libros_path, 'r',encoding='utf-8') as f:
     libros = [x.split("\t") for x in f]
 
+cont = 0
 for author, title, cover, description in libros:
 	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",(title, author, cover, description.strip()))
+
+	copia_num = (cont%4)+1
+	cur.execute(f"""INSERT OR REPLACE INTO Liburu_Kopiak VALUES (Null, {cont})""")
+	cont+=1
+
+
 
 con.commit()
 
 ###Insert kopiak
-kopiak_path = os.path.join(fitx_izen, "..", "kopiak.json")
-with open(kopiak_path, 'r') as k:
-	kopiak = json.load(k)['kopiak']
-for kopia in kopiak:
-	cur.execute(f"""INSERT OR REPLACE INTO Liburu_Kopiak VALUES ('{kopia['KopiaID']}','{kopia['LiburuID']}')""")
-con.commit()
+#kopiak_path = os.path.join(fitx_izen, "..", "kopiak.json")
+#with open(kopiak_path, 'r') as k:
+#	kopiak = json.load(k)['kopiak']
+#for kopia in kopiak:
+#	cur.execute(f"""INSERT OR REPLACE INTO Liburu_Kopiak VALUES ('{kopia['KopiaID']}','{kopia['LiburuID']}')""")
+#con.commit()
 
 ###Insert erreserbak
 erreserbak_path = os.path.join(fitx_izen, "..", "erreserbak.json")
 with open(erreserbak_path, 'r') as e:
 	erreserbak = json.load(e)['erreserbak']
 for erreserba in erreserbak:
-	cur.execute(f"""INSERT OR REPLACE INTO Erreserbatua VALUES('{erreserba['Erabiltzailea']}','{erreserba['Data1']}','{erreserba['LiburuKopia']}','{erreserba['EntregatzeData']}','{erreserba['Kantzelatuta']}')""")
+	cur.execute(f"""INSERT OR REPLACE INTO Erreserbatua VALUES('{erreserba['Erabiltzailea']}','{erreserba['Data1']/1000}','{erreserba['LiburuKopia']}','{erreserba['EntregatzeData']/1000}','{erreserba['EntregatzeData2']/1000}')""")
 con.commit()
 
 ###Insert erreseinak

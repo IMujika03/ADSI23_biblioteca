@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<div class="container p-5 my-5 border">
 <div class="check-btn-container" style="display: flex; flex-direction: column; align-items: flex-end;">
     <a href="/aukerak" class="nav-link {% if request.path == '/aukerak' %}active{% endif %}">
       <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
@@ -16,14 +16,16 @@
     {% if erreserbak %} <!-- Si la variable erreserbak no está vacía -->
         {% for erreserba, lib_info in zip(erreserbak, lib_info) %} <!-- Para cada reserva y título en las listas de reservas y títulos -->
             <div class="col-lg-12 col-md-6 col-sm-12 my-2">
-                <div class="card" style="width: 80rem; overflow: auto;">
+                <div class="card" style="width: 100%; overflow: auto;">
                     <div class="card-body" style="display: flex; flex-direction: row;">
                         <div style="width: 50%;">
-                            <h5 class="card-title"><a href="/liburua?id={{lib_info.0}}">{{lib_info.0}}</a></h5>
+                            {% if erreserba %}
+                            <h5 class="card-title"><a href="/liburua?id={{lib_info.id}}">{{lib_info.title}}</a></h5>
+                            {% endif %}
                             <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
                             <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
-                            {% if lib_info.2: %}
-                            <img src="{{lib_info.2}}" class="rounded" style="max-width: 6rem; height: fit-content; float: left;">
+                            {% if lib_info.cover: %}
+                            <img src="{{lib_info.cover}}" class="rounded" style="max-width: 6rem; height: fit-content; float: left;">
                             {% endif %}
                         </div>
                         <div class="card-footer" style="width: 100%; margin-left: auto;">
@@ -91,5 +93,5 @@
         {% endif %}
       </ul>
     </nav>
-
+</div>
 {% endblock %}
