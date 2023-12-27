@@ -201,7 +201,10 @@ class LibraryController:
 		return erabiltzaileak
 
 	def onartu(self, email1, email2):
-		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+		if email1 != email2:
+			res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+		else:
+			self.ezeztatu(email1,email2)#Ezeztatzen da ez agertzeko berriz
 
 	def ezeztatu(self, email1, email2):
 		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
