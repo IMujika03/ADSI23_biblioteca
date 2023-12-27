@@ -12099,4 +12099,12 @@ textarea.form-control-lg {
 #deskribapena{
     margin-bottom: 10px;
 }
+
+.alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+}
 /*# sourceMappingURL=bootstrap.css.map */

@@ -8,13 +8,21 @@
       <!-- Email input -->
       <div class="input-group mb-2 mr-sm-2">
           <label class="col-sm-2 col-form-label" for="email">Email kontua</label>
-          <input type="email" id="email" name="email" class="form-control mb-2" />
+          <input type="email" id="email" name="email" class="form-control mb-2" required/>
       </div>
 
       <!-- Submit button -->
       <button type="submit" class="btn btn-primary btn-block mb-4">Ezabatu</button>
-
-
     </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} my-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </div>
 {% endblock %}
