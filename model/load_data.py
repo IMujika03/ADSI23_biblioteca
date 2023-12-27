@@ -139,7 +139,7 @@ libros_path = os.path.join(fitx_izen,"..","libros.tsv")
 with open(libros_path, 'r',encoding='utf-8') as f:
     libros = [x.split("\t") for x in f]
 
-cont = 0
+cont = 1
 for author, title, cover, description in libros:
 	cur.execute("INSERT INTO Liburua VALUES (NULL, ?, ?, ?, ?)",(title, author, cover, description.strip()))
 
