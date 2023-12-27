@@ -1,4 +1,4 @@
-from model import Connection, Book, User
+from model import Connection, Book, Erabiltzailea
 from model.Erreserbatuta import Erreserbatuta
 from model.Gaia import Gaia
 from model.tools import hash_password
@@ -114,14 +114,14 @@ class LibraryController:
 	def get_user(self, email, password):
 		emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?", (email, hash_password(password)))
 		if len(emaitza) > 0:
-			return User(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
+			return Erabiltzailea(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
 		else:
 			return None
 
 	def get_user_cookies(self, token, time):
 		emaitza = db.select("SELECT u.* from Erabiltzailea u, Session s WHERE u.MailKontua = s.user_id AND s.last_login = ? AND s.session_hash = ?", (time, token))
 		if len(emaitza) > 0:
-			return User(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
+			return Erabiltzailea(emaitza[0][0], emaitza[0][1], emaitza[0][2], emaitza[0][3], emaitza[0][4], emaitza[0][5], emaitza[0][6])
 		else:
 			return None
 
@@ -216,7 +216,7 @@ class LibraryController:
 	            FROM Gaia
 	        """)
 			topics = [
-				Gaia()
+				Gaia(t[0], t[1], t[2], t[3],t[4])
 				for t in res
 			]
 			return topics

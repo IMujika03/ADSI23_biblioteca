@@ -3,7 +3,7 @@ from .Erabiltzailea import Erabiltzailea
 
 db = Connection()
 
-class Komentario:
+class Komentarioa:
     def __init__(self, id, gaia_id, user_id, content, created_at):
         self.id = id
         self.gaia_id = gaia_id

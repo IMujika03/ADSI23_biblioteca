@@ -1,10 +1,16 @@
 {
-  "erreseinak": [
+  "gaiak": [
     {
-      "Gaia": "Pasahitza ahastuta?"
+      "Izenburua": "Pasahitza ahastuta?",
+      "Mezua": "hhh",
+      "MailKontua": "james@gmail.com",
+      "Data": "2023-12-27"
     },
     {
-      "Gaia": "Nola egin erreserba"
+      "Izenburua": "ggs ahastuta?",
+      "Mezua": "hhh",
+      "MailKontua": "james@gmail.com",
+      "Data": "2023-11-24"
     }
   ]
 }

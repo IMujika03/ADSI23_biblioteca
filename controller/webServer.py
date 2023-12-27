@@ -200,16 +200,27 @@ def erabiltzaileaEzabatu():
 
 @app.route('/foroak')
 def foroak():
-    return render_template('foroak.html')
+	topics=library.get_all_topics()
+	return render_template('foroak.html', Gaiak=topics)
 
 @app.route('/gaia')
 def gaia():
-    return render_template('gaia.html')
+	gaia_id = request.values.get("id", -1)
+	gaia = library.get_topic_by_id(gaia_id)
+	komentarioak = gaia.get_komentarioak()
+	return render_template('gaia.html', gaia=gaia, komentarioa=komentarioak)
 
-@app.route('/foroak')
+@app.route('/gaiaSortu', methods=['POST'])
 def gaiaSortu():
-    return render_template('foroak.html')
+	izenburua = request.values.get("izenburu", "")
+	deskribapena = request.values.get("deskrib", "")
+	topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
+	return redirect('/gaia?id={}'.format(topic.id))
 
-@app.route('/gaia')
+@app.route('/komentatu', methods=['POST'])
 def Komentatu():
-    return render_template('gaia.html')
+	topic_id = request.values.get("id", -1)
+	topic = library.get_topic_by_id(topic_id)
+	komentarioa_string = request.values.get("komentarioa", "")
+	komentarioa = topic.sortu_komentarioa(komentarioa_string)
+	return redirect('/gaia?id={}'.format(topic.id))
