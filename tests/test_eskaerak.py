@@ -59,3 +59,5 @@ class TestEskaerak(BaseTestClass):
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
         self.assertEqual(1, res3[0][0])  # Ez da aldatu
         self.assertEqual(1, len(res3))  # Bakarrik agertzen da behin, ez da berriro gehitu
+
+    def test_onartzeko_erabiltzailerik_ez(self):
