@@ -9,7 +9,7 @@ class TestProfila(BaseTestClass):
         self.assertEqual(200, res.status_code) #Orriak ondo funtzionatzen du bertara heltzen delako
         page = BeautifulSoup(res.data, features="html.parser")
         title = page.select_one('h5.card-title a').getText()
-        self.assertEqual('El oro y la ceniza', title)#Erabiltzaileak liburu hau erreserbaturik du
+        self.assertEqual('Planilandia', title)#Erabiltzaileak liburu hau erreserbaturik du
         mezua = page.find(string="Ez daude libururik erreserbaturik.")
         self.assertNotEqual('Ez daude libururik erreserbaturik.', mezua)# Ez da agertzen errore mezurik
 

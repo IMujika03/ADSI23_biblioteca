@@ -242,3 +242,35 @@ class LibraryController:
 		except Exception as e:
 			print(f"Errorea create_topic: {e}")
 			return None
+
+	def existitzenEzBadaSortu(self, MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola,
+							  lagunakOnartzekoAukera):
+		s = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ?", (MailKontua,))
+		if len(s) <= 0:
+			erab = Erabiltzailea(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola,
+								 lagunakOnartzekoAukera)
+			self.erabiltzaileaGehitu(erab)
+			return True
+		else:
+			return False
+
+	def erabiltzaileaGehitu(self, erab):
+		print(erab.MailKontua, erab.SortzaileMailKontua, erab.Izena, erab.Abizena, hash_password(erab.Pasahitza),
+			  erab.Rola, erab.lagunakOnartzekoAukera)
+		db.insert("INSERT INTO Erabiltzailea VALUES (?, ?, ?, ?, ?, ?, ?)", (
+			erab.MailKontua, erab.SortzaileMailKontua, erab.Izena, erab.Abizena, hash_password(erab.Pasahitza),
+			erab.Rola, erab.lagunakOnartzekoAukera))
+
+	def existitzenBadaEzabatu(self, MailKontua):
+		s = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ?", (MailKontua,))
+		if len(s) > 0:
+			erab = Erabiltzailea(MailKontua, None, None, None, None, None, None)
+			self.erabiltzaileaEzabatu(erab)
+			return True
+		else:
+			return False
+
+	def erabiltzaileaEzabatu(self, erab):
+		print(erab.MailKontua, erab.SortzaileMailKontua, erab.Izena, erab.Abizena, erab.Pasahitza,
+			  erab.Rola, erab.lagunakOnartzekoAukera)
+		db.delete("DELETE FROM Erabiltzailea WHERE MailKontua = ?", (erab.MailKontua,))
