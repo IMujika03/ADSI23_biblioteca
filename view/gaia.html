@@ -5,14 +5,14 @@
     <h2>{{ gaia.titulo }}</h2>
     <p>{{ gaia.descripcion }}</p>
     <ul>
-        {% for komentario in gaia.komentarioa %}
-            <li>{{ komentarioa.usuario }} dijo: {{ komentarioa.texto }}</li>
+        {% for komentarioa in gaia.Komentarioak %}
+            <li>{{ komentarioa.usuario }} esan du: {{ komentarioa.texto }}</li>
         {% endfor %}
     </ul>
     <form method="POST" action="/foroak/{{ gaia.id }}/comentar">
         <textarea name="komentarioa" rows="4" cols="50"></textarea>
         <br>
-        <input type="submit" value="Comentar">
+        <input type="submit" value="Komentatu">
     </form>
 </div>
 {% endblock %}
