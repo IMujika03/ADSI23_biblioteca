@@ -7,6 +7,14 @@
         {% for gaia in Gaiak %}
             <li><a href="/gaia?id={{ gaia.id }}">{{ gaia.title }}</a></li>
         {% endfor %}
-    </ul>
+     <div class="mt-4">
+        <h4>Sartu gai berria</h4>
+        <form action="/gaiaSortu" method="post">
+            <div class="mb-3">
+                <textarea class="form-control" id="nuevoTexto" name="nuevoTexto" rows="1"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Sortu</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
