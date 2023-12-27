@@ -48,3 +48,11 @@ class Erabiltzailea:
 
     def delete_session(self, session_hash):
         db.delete("DELETE FROM Session WHERE session_hash = ? AND user_id = ?", (session_hash, self.MailKontua))
+
+    def aldatu1era(self):
+        self.lagunakOnartzekoAukera = 1
+        db.update("UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = ?", (self.MailKontua,))
+
+    def aldatu0ra(self):
+        self.lagunakOnartzekoAukera = 0
+        db.update("UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = ?", (self.MailKontua,))
