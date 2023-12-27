@@ -57,12 +57,11 @@ def pertsonala():
 @app.route('/aukerak', methods=['GET', 'POST'])
 def aukerak():
 	if 'user' in request.__dict__ and request.user and request.user.token:
-		email = request.user.MailKontua
 		if "aldatu1era" in request.values:
-			library.aldatu1era(email)
+			request.user.aldatu1era()
 		elif "aldatu0ra" in request.values:
-			library.aldatu0ra(email)
-		lagunAukera = library.lagunakAukera(email=email)
+			request.user.aldatu0ra()
+		lagunAukera = request.user.lagunakOnartzekoAukera
 		return render_template('aukerak.html', lagunAukera=lagunAukera)
 	else:
 		return redirect('/login')#Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
