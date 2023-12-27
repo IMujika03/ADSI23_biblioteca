@@ -1,4 +1,3 @@
-from model import User
 from .LibraryController import LibraryController
 from flask import Flask, render_template, request, make_response, redirect, url_for, jsonify
 
@@ -181,10 +180,7 @@ def erabiltzaileaSortu():
 		Rola = "erab"
 		lagunakOnartzekoAukera = "0"
 
-		user = User(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola, lagunakOnartzekoAukera)
-
-		if user.new_user():
-			# Si el usuario se crea correctamente, redirigir a la página catalogue.html
+		if library.existitzenEzBadaSortu(MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola, lagunakOnartzekoAukera):
 			return redirect(url_for('catalogue'))
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
@@ -195,10 +191,7 @@ def erabiltzaileaEzabatu():
 	if request.method == 'POST':
 		MailKontua = request.form.get("email")
 
-		user = User(MailKontua, None, None, None, None, None, None)
-
-		if user.delete_user():
-			# Si el usuario se elimina correctamente, redirigir a la página catalogue.html
+		if library.existitzenBadaEzabatu(MailKontua):
 			return redirect(url_for('catalogue'))
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
