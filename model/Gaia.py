@@ -37,14 +37,14 @@ class Gaia:
     def sortu_komentarioa(self, komentarioa_string):
         try:
             # Crear un nuevo comentario
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            date = datetime.now()
             komentarioa = Komentarioa(
                 #id=None,  # Esto debería establecerse automáticamente si es un ID autoincremental
                 gaia_id=self.id,
                 Izenburua=self.title,  # O ajusta según cómo estés manejando los comentarios para los temas
                 Mezua=komentarioa_string,
                 MailKontua=self.author,
-                created_at=now
+                created_at=date.timestamp()
             )
 
             # Insertar el comentario en la base de datos
