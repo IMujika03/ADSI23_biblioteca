@@ -73,7 +73,7 @@ def eskaerak():
 		if "onartu" in request.values:
 			library.onartu(email, request.values.get("korreoa"))
 		elif "ezeztatu" in request.values:
-			library.onartu(email, request.values.get("korreoa"))
+			library.ezeztatu(email, request.values.get("korreoa"))
 		erabiltzaileLista = library.lagunPosibleakLortu(request.user.MailKontua)
 		return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
 	else:
