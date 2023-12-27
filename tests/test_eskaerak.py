@@ -34,4 +34,16 @@ class TestEskaerak(BaseTestClass):
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
         self.assertEqual(0, res3[0][0])  # 0 da, ez delako onartu
 
-    # Creo que hay que comprobar en la consulta que no se esté agregando a si mismo
+    def test_onartu_erabiltzaile_bera(self): #Hau ezin da egin web orrian, ez delako aukerarik ematen
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")
+        self.login('james@gmail.com', '123456')
+        res = self.client.get('/eskaerak')
+        page = BeautifulSoup(res.data, features="html.parser")
+        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa': 'james@gmail.com'})
+        self.assertEqual(200, res2.status_code)  # Ondo egin da eskakizuna
+        page2 = BeautifulSoup(res2.data, features="html.parser")  # orria aldatu da
+        mezua = page2.find(string=' Ez daude erabiltzailerik lagunak izateko')
+        self.assertEqual(' Ez daude erabiltzailerik lagunak izateko', mezua)  # Eskaera kendu da
+        res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
+        self.assertEqual(0, res3[0][0])  # 0 da, ez delako onartu

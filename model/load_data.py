@@ -86,7 +86,7 @@ cur.execute("""
 
 cur.execute("""
 	CREATE TABLE IF NOT EXISTS Gaia(
-		id integer PRIMARY KEY autoincrement,
+		id integer PRIMARY KEY AUTOINCREMENT,
 		Izenburua varchar,
 		Mezua varchar,
 		MailKontua varchar,
@@ -183,6 +183,13 @@ for gaia in gaiak:
 	cur.execute(f"""INSERT OR REPLACE INTO Gaia VALUES(NULL,'{gaia['Izenburua']}','{gaia['Mezua']}','{gaia['MailKontua']}','{gaia['Data']}')""")
 con.commit()
 
+###Insert komentarioak
+komentarioak_path = os.path.join(fitx_izen, "..", "komentarioak.json")
+with open(komentarioak_path, 'r', encoding="utf-8") as er:
+	komentarioak = json.load(er)['komentarioak']
+for komentarioa in komentarioak:
+	cur.execute(f"""INSERT OR REPLACE INTO Komentarioa VALUES('{komentarioa['ID']}','{komentarioa['MailKontua']}','{komentarioa['GaiIzenburu']}','{komentarioa['ErantzunKomentarioa']}','{komentarioa['Testua']}')""")
+con.commit()
 
 con.close()
 

@@ -148,7 +148,7 @@ class LibraryController:
 	        LIMIT ? OFFSET ?
 	        """, (email, limit, limit * page))
 		erreserbak = [
-			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka
+			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
 			for e in res
 		]
 		liburu_info = [self.aurkituLibKopiatik(e.libId) for e in erreserbak]
@@ -178,7 +178,7 @@ class LibraryController:
 
 	def lagunPosibleakLortu(self, email):
 		res = db.select("""
-	        SELECT e.MailKontua
+	        SELECT e.*
 	        FROM Erabiltzailea e
 	        WHERE e.lagunakOnartzekoAukera LIKE 1
 	        AND e.MailKontua != ? -- Excluye el propio correo
@@ -194,13 +194,21 @@ class LibraryController:
 	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
 	        )
 	    """, (email, email, email))
-		return res
+		erabiltzaileak = [
+			Erabiltzailea(e[0], e[1], e[2], e[3], e[4], e[5], e[6])
+			for e in res
+		]
+		return erabiltzaileak
 
-	def onartu(self,email1,email2):
-		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+	def onartu(self, email1, email2):
+		if email1 != email2:
+			res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+		else:
+			self.ezeztatu(email1,email2)#Ezeztatzen da ez agertzeko berriz
 
-	def ezeztatu(self,email1,email2):
+	def ezeztatu(self, email1, email2):
 		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
+
 
 	def get_all_topics(self):
 		try:
@@ -227,11 +235,11 @@ class LibraryController:
 
 	def create_topic(self, izenburua, deskribapena, MailKontua):
 		try:
-			date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			date = datetime.now()
 			db.insert("""
-	               INSERT INTO Gaia (Izenburua, MailKontua, Deskribapena, SortzeData)
+	               INSERT INTO Gaia (Izenburua, Mezua, MailKontua, Data)
 	               VALUES (?, ?, ?, ?)
-	           """, (izenburua, MailKontua, deskribapena, date))
+	           """, (izenburua, deskribapena, MailKontua, date.timestamp()))
 
 			# Recuperar y devolver el objeto Gaia recién creado
 			res = db.select("SELECT * FROM Gaia WHERE Izenburua = ?", (izenburua,))
