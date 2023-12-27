@@ -28,7 +28,7 @@ class Komentario:
         """
         return {
             'id': self.id,
-            'tema_id': self.gaia_id,
+            'gaia_id': self.gaia_id,
             'user_id': self.user_id,
             'content': self.content,
             'created_at': self.created_at

@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="container p-5 my-5 border">
+    <h1>Foroak</h1>
+    <ul>
+        {% for Gaia in Gaia %}
+            <li><a href="/foroak/{{ gaia.id }}">{{ gaia.titulo }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

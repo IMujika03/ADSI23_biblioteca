@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container p-5 my-5 border">
+    <h2>{{ gaia.titulo }}</h2>
+    <p>{{ gaia.descripcion }}</p>
+    <ul>
+        {% for komentario in gaia.komentarioa %}
+            <li>{{ komentarioa.usuario }} dijo: {{ komentarioa.texto }}</li>
+        {% endfor %}
+    </ul>
+    <form method="POST" action="/foroak/{{ gaia.id }}/comentar">
+        <textarea name="komentarioa" rows="4" cols="50"></textarea>
+        <br>
+        <input type="submit" value="Comentar">
+    </form>
+</div>
+{% endblock %}
