@@ -97,12 +97,11 @@ cur.execute("""
 
 cur.execute("""
 	CREATE TABLE IF NOT EXISTS Komentarioa(
-		ID integer,
+		ID integer PRIMARY KEY AUTOINCREMENT,
 		MailKontua varchar,
 		GaiIzenburu varchar,
 		ErantzunKomentarioa integer,
 		Testua TEXT,
-		PRIMARY KEY (ID,MailKontua),
 		FOREIGN KEY (MailKontua) REFERENCES Erabiltzailea(MailKontua),
 		FOREIGN KEY (GaiIzenburu) REFERENCES Gaia(Izenburua),
 		FOREIGN KEY (ErantzunKomentarioa) REFERENCES Komentarioa(ID)
@@ -188,7 +187,7 @@ komentarioak_path = os.path.join(fitx_izen, "..", "komentarioak.json")
 with open(komentarioak_path, 'r', encoding="utf-8") as er:
 	komentarioak = json.load(er)['komentarioak']
 for komentarioa in komentarioak:
-	cur.execute(f"""INSERT OR REPLACE INTO Komentarioa VALUES('{komentarioa['ID']}','{komentarioa['MailKontua']}','{komentarioa['GaiIzenburu']}','{komentarioa['ErantzunKomentarioa']}','{komentarioa['Testua']}')""")
+	cur.execute(f"""INSERT OR REPLACE INTO Komentarioa VALUES(NULL,'{komentarioa['MailKontua']}','{komentarioa['GaiIzenburu']}','{komentarioa['ErantzunKomentarioa']}','{komentarioa['Testua']}')""")
 con.commit()
 
 con.close()
