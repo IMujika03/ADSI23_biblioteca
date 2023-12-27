@@ -196,10 +196,14 @@ def erabiltzaileaEzabatu():
 	return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
 
 
-@app.route('/foroak')
+@app.route('/foroak',  methods=['GET', 'POST'])
 def foroak():
-	topics=library.get_all_topics()
-	return render_template('foroak.html', Gaiak=topics)
+	if 'user' in request.__dict__ and request.user and request.user.token:
+		topics=library.get_all_topics()
+		return render_template('foroak.html', Gaiak=topics)
+	else:
+		return redirect('/login')
+
 
 @app.route('/gaia')
 def gaia():
@@ -210,8 +214,8 @@ def gaia():
 
 @app.route('/gaiaSortu', methods=['POST'])
 def gaiaSortu():
-	izenburua = request.values.get("izenburu", "")
-	deskribapena = request.values.get("deskrib", "")
+	izenburua = request.values.get("nuevoTitulo", "")
+	deskribapena = request.values.get("nuevaDeskribapena", "")
 	topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
 	return redirect('/gaia?id={}'.format(topic.id))
 

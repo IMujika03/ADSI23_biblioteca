@@ -226,11 +226,11 @@ class LibraryController:
 
 	def create_topic(self, izenburua, deskribapena, MailKontua):
 		try:
-			date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			date = datetime.now()
 			db.insert("""
-	               INSERT INTO Gaia (Izenburua, MailKontua, Deskribapena, SortzeData)
+	               INSERT INTO Gaia (Izenburua, Mezua, MailKontua, Data)
 	               VALUES (?, ?, ?, ?)
-	           """, (izenburua, MailKontua, deskribapena, date))
+	           """, (izenburua, deskribapena, MailKontua, date.timestamp()))
 
 			# Recuperar y devolver el objeto Gaia recién creado
 			res = db.select("SELECT * FROM Gaia WHERE Izenburua = ?", (izenburua,))
