@@ -1,4 +1,5 @@
 from model import Connection, Book, Erabiltzailea
+from model.Erreseina import Erreseina
 from model.Erreserbatuta import Erreserbatuta
 from model.Gaia import Gaia
 from model.tools import hash_password
@@ -148,11 +149,15 @@ class LibraryController:
 	        LIMIT ? OFFSET ?
 	        """, (email, limit, limit * page))
 		erreserbak = [
-			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
+			Erreserbatuta(e[0], e[1], e[2], e[3])#4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
+			for e in res
+		]
+		erreseinak = [
+			Erreseina(e[5], e[6])
 			for e in res
 		]
 		liburu_info = [self.aurkituLibKopiatik(e.libId) for e in erreserbak]
-		return erreserbak, liburu_info, count
+		return erreserbak, erreseinak, liburu_info, count
 
 	def aurkituLibKopiatik(self,kopia_id):
 		res = db.select("""
