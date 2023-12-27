@@ -1,4 +1,5 @@
 from .Connection import Connection
+from .Erabiltzailea import Erabiltzailea
 
 db = Connection()
 
@@ -20,7 +21,7 @@ class Komentario:
         """
         row = db.select("SELECT * FROM Erabiltzailea WHERE MailKontua=?", (self.user_id,))
         if row:
-            return User(*row[0])
+            return Erabiltzailea(*row[0])
 
     def to_dict(self):
         """
