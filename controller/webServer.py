@@ -189,3 +189,20 @@ def erabiltzaileaEzabatu():
 
 	# Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
 	return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
+
+
+@app.route('/foroak')
+def foroak():
+    return render_template('foroak.html')
+
+@app.route('/gaia')
+def gaia():
+    return render_template('gaia.html')
+
+@app.route('/foroak')
+def gaiaSortu():
+    return render_template('foroak.html')
+
+@app.route('/gaia')
+def Komentatu():
+    return render_template('gaia.html')

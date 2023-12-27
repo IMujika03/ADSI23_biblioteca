@@ -4,9 +4,8 @@ from .Comentario import Komentarioa
 db = Connection()
 
 class Gaia:
-    def __init__(self, id, foroak_id, title, content, created_at):
+    def __init__(self, id, title, content, created_at):
         self.id = id
-        self.foroak_id = foroak_id
         self.title = title
         self.content = content
         self.created_at = created_at

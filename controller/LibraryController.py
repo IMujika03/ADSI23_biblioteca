@@ -1,5 +1,6 @@
 from model import Connection, Book, User
 from model.Erreserbatuta import Erreserbatuta
+from model.Gaia import Gaia
 from model.tools import hash_password
 import datetime
 db = Connection()
@@ -191,3 +192,19 @@ class LibraryController:
 
 	def ezeztatu(self,email1,email2):
 		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
+
+	def get_all_topics(self):
+		try:
+			res = db.select("""
+	            SELECT *
+	            FROM Gaia
+	        """)
+			topics = [
+				Gaia()
+				for t in res
+			]
+			return topics
+		except Exception as e:
+			print(f"Errorea get_all_topics: {e}")
+			return []
+
