@@ -86,7 +86,7 @@ cur.execute("""
 
 cur.execute("""
 	CREATE TABLE IF NOT EXISTS Gaia(
-		id integer PRIMARY KEY autoincrement,
+		id integer PRIMARY KEY AUTOINCREMENT,
 		Izenburua varchar,
 		Mezua varchar,
 		MailKontua varchar,
