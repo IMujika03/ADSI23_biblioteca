@@ -69,10 +69,11 @@ def aukerak():
 @app.route('/eskaerak', methods=['GET', 'POST'])
 def eskaerak():
 	if 'user' in request.__dict__ and request.user and request.user.token:
+		email = request.user.MailKontua
 		if "onartu" in request.values:
-			request.user.aldatu1era
+			library.onartu(email, request.values.get("korreoa"))
 		elif "ezeztatu" in request.values:
-			request.user.aldatu0ra
+			library.onartu(email, request.values.get("korreoa"))
 		erabiltzaileLista = library.lagunPosibleakLortu(request.user.MailKontua)
 		return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
 	else:

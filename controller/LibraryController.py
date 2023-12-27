@@ -200,6 +200,12 @@ class LibraryController:
 		]
 		return erabiltzaileak
 
+	def onartu(self, email1, email2):
+		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+
+	def ezeztatu(self, email1, email2):
+		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
+
 
 	def get_all_topics(self):
 		try:
