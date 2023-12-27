@@ -8,12 +8,12 @@
         {% for erab in erabiltzaileLista %}
             <div class="col-lg-12 col-md-6 col-sm-12 my-2">
                 <div class="card" style="width: 77rem; overflow: auto;">
-                    <h6 class="card-subtitle mb-2 text-muted" style="display: flex; justify-content: center; align-items: center; margin: 3px " >{{erab.0}}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted" style="display: flex; justify-content: center; align-items: center; margin: 3px " >{{erab.MailKontua}}</h6>
                     <div class="card-footer" style="display: flex; justify-content: center; align-items: center; ">
                         <form method="POST">
                             <input type="submit" style="background-color: lightblue; color: black; margin: 10px; border-radius: 5px;" value="onartu" id="onartu" name="onartu">
                             <input type="submit" style="background-color: lightcoral; color: black; margin: 10px; border-radius: 5px;" value="ezeztatu" id="ezeztatu" name="ezeztatu">
-                            <input type="hidden" value="{{erab.0}}" id="korreoa" name="korreoa">
+                            <input type="hidden" value="{{erab.MailKontua}}" id="korreoa" name="korreoa">
                         </form>
                     </div>
                 </div>

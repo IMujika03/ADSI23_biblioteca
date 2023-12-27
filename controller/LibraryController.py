@@ -148,7 +148,7 @@ class LibraryController:
 	        LIMIT ? OFFSET ?
 	        """, (email, limit, limit * page))
 		erreserbak = [
-			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka
+			Erreserbatuta(e[0], e[1], e[2], e[3], e[5], e[6])#4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
 			for e in res
 		]
 		liburu_info = [self.aurkituLibKopiatik(e.libId) for e in erreserbak]
@@ -168,17 +168,10 @@ class LibraryController:
 			for b in res
 		]
 		return books[0]
-	def lagunakAukera(self, email):
-		res = db.select("""
-				SELECT e.lagunakOnartzekoAukera
-				FROM Erabiltzailea e
-				WHERE MailKontua = ? 
-				""", (email,))
-		return res[0][0]
 
 	def lagunPosibleakLortu(self, email):
 		res = db.select("""
-	        SELECT e.MailKontua
+	        SELECT e.*
 	        FROM Erabiltzailea e
 	        WHERE e.lagunakOnartzekoAukera LIKE 1
 	        AND e.MailKontua != ? -- Excluye el propio correo
@@ -194,7 +187,11 @@ class LibraryController:
 	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
 	        )
 	    """, (email, email, email))
-		return res
+		erabiltzaileak = [
+			Erabiltzailea(e[0], e[1], e[2], e[3], e[4], e[5], e[6])
+			for e in res
+		]
+		return erabiltzaileak
 
 	def onartu(self,email1,email2):
 		res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
