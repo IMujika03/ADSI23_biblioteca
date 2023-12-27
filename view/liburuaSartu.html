@@ -8,29 +8,29 @@
         <!-- Izenburua input -->
         <div class="form-group">
             <label for="izenburua">Izenburua</label>
-            <input type="text" id="izenburua" name="izenburua" class="form-control" required>
+            <input type="text" id="izenburua" name="izenburua" maxlength="50" class="form-control" required>
         </div>
 
         <!-- Egilea input -->
         <div class="form-group">
             <label for="egilea">Egilea</label>
-            <input type="text" id="egilea" name="egilea" class="form-control" required>
+            <input type="text" id="egilea" name="egilea" maxlength="50" class="form-control" required>
         </div>
 
         <!-- Irudia input -->
         <div class="form-group">
             <label for="irudia">Irudia (url)</label>
-            <input type="text" id="irudia" name="irudia" class="form-control" required>
+            <input type="text" id="irudia" name="irudia" maxlength="50" class="form-control" required>
         </div>
 
         <!-- Deskribapena input -->
         <div class="form-group">
             <label for="deskribapena">Deskribapena</label>
-            <input type="textarea" id="deskribapena" name="deskribapena" class="form-control" required>
+            <textarea id="deskribapena" name="deskribapena" class="form-control" required></textarea>
         </div>
 
         <!-- Submit button -->
-        <button type="submit" class="btn btn-primary">Gorde Liburua</button>
+        <button type="submit" class="btn btn-primary">Gorde liburua</button>
     </form>
 </div>
 {% endblock %}
