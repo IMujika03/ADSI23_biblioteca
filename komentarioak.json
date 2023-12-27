@@ -1,18 +1,33 @@
 {
   "komentarioak": [
     {
+      "MailKontua": "james@gmail.com",
+      "Izenburua": "Pasahitza ahaztuta?",
+      "ErantzunKomentarioa": 1,
       "Komentarioa": "Ez dago modurik pasahitza berreskuratzeko"
     },
     {
+      "MailKontua": "james@gmail.com",
+      "Izenburua": "Pasahitza ahaztuta?",
+      "ErantzunKomentarioa": 2,
       "Komentarioa": "Apuntatu paper batean hurrengorako"
     },
     {
+      "MailKontua": "james@gmail.com",
+      "Izenburua": "Pasahitza ahaztuta?",
+      "ErantzunKomentarioa": 3,
       "Komentarioa": "Sortu kontu berri bat"
     },
     {
+      "MailKontua": "james@gmail.com",
+      "Izenburua": "Nola logeatu",
+      "ErantzunKomentarioa": 4,
       "Komentarioa": "Sartu erreserba atalean, ez du zailtasunik"
     },
     {
+      "MailKontua": "james@gmail.com",
+      "Izenburua": "Nola logeatu",
+      "ErantzunKomentarioa":5,
       "Komentarioa": "Eskerrik asko!!!"
     }
   ]
