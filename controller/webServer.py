@@ -69,12 +69,11 @@ def aukerak():
 @app.route('/eskaerak', methods=['GET', 'POST'])
 def eskaerak():
 	if 'user' in request.__dict__ and request.user and request.user.token:
-		email = request.user.MailKontua
 		if "onartu" in request.values:
-			library.onartu(email, request.values.get("korreoa"))
+			request.user.aldatu1era
 		elif "ezeztatu" in request.values:
-			library.ezeztatu(email, request.values.get("korreoa"))
-		erabiltzaileLista = library.lagunPosibleakLortu(email)
+			request.user.aldatu0ra
+		erabiltzaileLista = library.lagunPosibleakLortu(request.user.MailKontua)
 		return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
 	else:
 		return redirect('/login')#Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
