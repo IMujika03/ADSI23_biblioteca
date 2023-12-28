@@ -224,7 +224,7 @@ class LibraryController:
 
 	def get_topic_by_id(self, topic_id):
 		try:
-			res = db.select("SELECT * FROM Gaia WHERE Izenburua = ?", (topic_id,))
+			res = db.select("SELECT * FROM Gaia WHERE ID = ?", (topic_id,))
 			if res:
 				return Gaia(res[0][0], res[0][1], res[0][2], res[0][3], res[0][4])
 			else:

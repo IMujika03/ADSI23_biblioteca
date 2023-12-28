@@ -253,8 +253,13 @@ def foroak():
 def gaia():
     gaia_id = request.values.get("id", -1)
     gaia = library.get_topic_by_id(gaia_id)
-    komentarioak = gaia.get_komentarioak()
-    return render_template('gaia.html', gaia=gaia, komentarioa=komentarioak)
+    if gaia is None:
+        # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
+        return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
+                               mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
+    else:
+        komentarioak = gaia.get_komentarioak()
+        return render_template('gaia.html', gaia=gaia, komentarioa=komentarioak)
 
 
 @app.route('/gaiaSortu', methods=['POST'])

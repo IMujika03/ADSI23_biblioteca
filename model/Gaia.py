@@ -31,7 +31,7 @@ class Gaia:
         """
         Obtiene todos los comentarios asociados a este tema.
         """
-        rows = db.select("SELECT * FROM Komentarioa WHERE gaia_id=?", (self.id,))
+        rows = db.select("SELECT * FROM Komentarioa WHERE GaiIzenburu=?", (self.title,))
         return [Komentarioa(*row) for row in rows]
 
     def sortu_komentarioa(self, komentarioa_string):
