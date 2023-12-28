@@ -173,13 +173,6 @@ class LibraryController:
 			for b in res
 		]
 		return books[0]
-	def lagunakAukera(self, email):
-		res = db.select("""
-				SELECT e.lagunakOnartzekoAukera
-				FROM Erabiltzailea e
-				WHERE MailKontua = ? 
-				""", (email,))
-		return res[0][0]
 
 	def lagunPosibleakLortu(self, email):
 		res = db.select("""
