@@ -52,7 +52,8 @@ def pertsonala():
         email = request.user.MailKontua
         erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page - 1)
         total_pages = (nb_erreserbak // 6) + 1
-        return render_template('pertsonala.html', erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info, current_page=page,
+        return render_template('pertsonala.html', erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info,
+                               current_page=page,
                                total_pages=total_pages, max=max, min=min)
     else:
         return redirect('/login')  # Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
@@ -236,7 +237,7 @@ def liburuaSartu():
             flash('Errore bat egon da. Ziur zaude liburu hori existitzen ez dela?', 'error')
             return redirectNoAdmin("liburuaSartu.html", "login")
 
-    # Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+    # Si no es un método POST , mostrar el formulario erabiltzaileaSortu.html
     return redirectNoAdmin("liburuaSartu.html", "login")
 
 
@@ -249,17 +250,24 @@ def foroak():
         return redirect('/login')
 
 
-@app.route('/gaia')
+@app.route('/gaia', methods=['GET', 'POST'])
 def gaia():
     gaia_id = request.values.get("id", -1)
     gaia = library.get_topic_by_id(gaia_id)
-    if gaia is None:
-        # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
-        return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
-                               mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
+
+    if request.method == 'POST':
+        komentarioa = request.form.get("komentarioa")
+        print(gaia)
+        library.komentarioaGehitu(request.user.MailKontua, gaia.title, 0, komentarioa)
     else:
-        komentarioak = library.get_comments_for_topic(gaia)
-        return render_template('gaia.html', gaia=gaia, Komentarioak=komentarioak)
+        if gaia is None:
+            # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
+            return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
+                                   mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
+
+    komentarioak = library.get_comments_for_topic(gaia)
+    print(komentarioak)
+    return render_template('gaia.html', gaia=gaia, Komentarioak=komentarioak)
 
 
 @app.route('/gaiaSortu', methods=['POST'])
