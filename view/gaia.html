@@ -5,8 +5,8 @@
     <h2>{{ gaia.title }}</h2>
     <p>{{ gaia.content }}</p>
     <ul>
-        {% for komentarioa in gaia.komentarioak %}
-            <li>{{ komentarioa.user_id }} esan du: {{ komentarioa.content }}</li>
+        {% for komentarioa in Komentarioak %}
+            <li>{{ komentarioa.author }} esan du: {{ komentarioa.content }}</li>
         {% endfor %}
     </ul>
     <form method="POST" action="/foroak/{{ gaia.id }}/comentar">

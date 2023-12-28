@@ -4,12 +4,12 @@ from .Erabiltzailea import Erabiltzailea
 db = Connection()
 
 class Komentarioa:
-    def __init__(self, id, gaia_id, user_id, content, created_at):
+    def __init__(self, id, autor, title, ErantzunKomentarioa, content):
         self.id = id
-        self.gaia_id = gaia_id
-        self.user_id = user_id
+        self.author = autor
+        self.title = title
+        self.ErantzunKomentarioa = ErantzunKomentarioa
         self.content = content
-        self.created_at = created_at
 
     def __str__(self):
         return f"{self.content}"
@@ -19,18 +19,7 @@ class Komentarioa:
         """
         Obtiene el usuario asociado a este comentario.
         """
-        row = db.select("SELECT * FROM Erabiltzailea WHERE MailKontua=?", (self.user_id,))
+        row = db.select("SELECT * FROM Erabiltzailea WHERE MailKontua=?", (self.author,))
         if row:
             return Erabiltzailea(*row[0])
 
-    def to_dict(self):
-        """
-        Devuelve una representación en forma de diccionario del comentario.
-        """
-        return {
-            'id': self.id,
-            'gaia_id': self.gaia_id,
-            'user_id': self.user_id,
-            'content': self.content,
-            'created_at': self.created_at
-        }

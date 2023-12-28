@@ -251,6 +251,28 @@ class LibraryController:
 			print(f"Errorea create_topic: {e}")
 			return None
 
+	def get_comments_for_topic(self, topic):
+		try:
+			res = db.select("""
+					SELECT k.*, u.MailKontua
+	                FROM Komentarioa k
+	                INNER JOIN Erabiltzailea u ON k.MailKontua = u.MailKontua
+	                WHERE k.GaiIzenburu = ?
+				""", (topic.title,))
+			comments = [
+                {
+                    'id': comment[0],
+                    'user': comment[4],  # Cambiado para mostrar la cuenta de correo
+                    'text': comment[3],
+                    'timestamp': comment[2]
+                }
+				for comment in res
+            ]
+			return comments
+		except Exception as e:
+			print(f"Errorea get_comments_for_topic: {e}")
+			return []
+
 	def existitzenEzBadaSortu(self, MailKontua, SortzaileMailKontua, Izena, Abizena, Pasahitza, Rola,
 							  lagunakOnartzekoAukera):
 		s = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ?", (MailKontua,))

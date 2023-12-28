@@ -258,8 +258,8 @@ def gaia():
         return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
                                mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
     else:
-        komentarioak = gaia.get_komentarioak()
-        return render_template('gaia.html', gaia=gaia, komentarioa=komentarioak)
+        komentarioak = library.get_comments_for_topic(gaia)
+        return render_template('gaia.html', gaia=gaia, Komentarioak=komentarioak)
 
 
 @app.route('/gaiaSortu', methods=['POST'])

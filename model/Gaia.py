@@ -19,7 +19,7 @@ class Gaia:
     @property
     def author(self):
         if type(self._author) == str:
-            em = db.select("SELECT * from Erabiltzailea WHERE id=?", (self._author,))[0]
+            em = db.select("SELECT * from Erabiltzailea WHERE MailKontua=?", (self._author,))[0]
             self._author = Erabiltzailea(em[0], em[1], em[2], em[3], em[4], em[5], em[6])
         return self._author
 
@@ -40,19 +40,18 @@ class Gaia:
             date = datetime.now()
             komentarioa = Komentarioa(
                 #id=None,  # Esto debería establecerse automáticamente si es un ID autoincremental
-                gaia_id=self.id,
-                Izenburua=self.title,  # O ajusta según cómo estés manejando los comentarios para los temas
-                Mezua=komentarioa_string,
                 MailKontua=self.author,
-                created_at=date.timestamp()
+                Izenburua=self.title,
+                ErantzunKomentarioa=self.id,
+                Mezua=komentarioa_string,
             )
 
             # Insertar el comentario en la base de datos
             db.insert("""
-                INSERT INTO Komentarioa (gaia_id, Izenburua, Mezua, MailKontua, created_at)
-                VALUES (?, ?, ?, ?, ?)
-            """, (komentarioa.gaia_id, komentarioa.Izenburua, komentarioa.Mezua,
-                  komentarioa.MailKontua, komentarioa.created_at))
+                INSERT INTO Komentarioa (MailKontua, Izenburua, ErantzunKomentarioa, Mezua)
+                VALUES (?, ?, ?, ?)
+            """, (komentarioa.author, komentarioa.title,
+                  komentarioa.ErantzunKomentarioa, komentarioa.content))
 
             return komentarioa
         except Exception as e:
