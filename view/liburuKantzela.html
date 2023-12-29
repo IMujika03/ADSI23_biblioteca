@@ -15,7 +15,8 @@
         <div class="d-flex justify-content-between">
            <form id="kantzelaForm" action="{{ url_for('kantzelatu_liburua') }}" method="POST">
             <input type="hidden" name="libro_id" value="{{book.id}}">
-            <input type="hidden" name="erreserba" value="{{erreserba}}">
+            <input type="hidden" name="erabiltzaile" value="{{erabiltzaile}}">
+             <input type="hidden" name="kopia_id" value="{{kopia_id}}">
             <button type="submit" class="btn btn-primary">KANTZELATU</button>
           </form>
           <a href="{{ url_for('pertsonala') }}" class="btn btn-secondary">ATZERA</a>

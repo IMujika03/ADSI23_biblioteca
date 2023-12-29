@@ -138,10 +138,14 @@ def erreserbatu_liburua():
 @app.route('/liburua2')
 def liburua2():
     book_id = request.values.get("id", "")
-    erreserba = request.values.get("erreserba", "")
+    erabiltzaile = request.values.get("erab", "")
+    kopia_id = request.values.get("kopia_id", "")
+
+   # print(f"erreserba : {erreserba}")
+   # print(f"erreserba : {type(erreserba)}")
     liburua = library.aurkitu_liburua(book_id)
     if liburua :
-        return render_template('liburuKantzela.html', book=liburua, erreserba=erreserba)
+        return render_template('liburuKantzela.html', book=liburua, erabiltzaile=erabiltzaile, kopia_id=kopia_id)
     else:
         print(f" ID hau duen liburua ez da aurkitu: {book_id}")
         return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu",
@@ -153,23 +157,24 @@ def kantzelatu_liburua():
             # Por si acaso no esta logeado aunque no deberia de pasar
             return redirect('/login')
         else:
-            erreserba = request.form.get('erreserba')
-            book_id = request.form.get('libro_id')
-            print(f"erreserba : {type(erreserba)}")
-            print(f"mail : {erreserba}")
-            if erreserba:
-                kantzelatuta = library.kantzelatu_erreserba(erreserba)
-                if kantzelatuta:
-                    return render_template('mezua.html', tituloa="Kantzelatuta", mezua="Aukeratutako liburuaren erreserba kantzelatuta: {{erreserba.libId}}", location='/pertsonala')
-                else:
-                    print(f" Erreserba ezin izan da kantzelatu")
-                    return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da erreserba kantzelatu: {{erreserba.lidId}}",
-                                       location='/pertsonala')
+            erabiltzaile = request.form.get('erabiltzaile')
+            kopia_id = request.form.get('kopia_id')
+            #book_id = request.form.get('libro_id')
+           # print(f"erreserba : {type(erreserba)}")
+            #print(f"mail : {erreserba}")
+            #if erreserba:
+            kantzelatuta = library.kantzelatu_erreserba(erabiltzaile,kopia_id)
+            if kantzelatuta:
+                return render_template('mezua.html', tituloa="Kantzelatuta", mezua="Aukeratutako liburuaren erreserba kantzelatuta", location='/pertsonala')
             else:
-                print(f" Ez da erreserba aurkitu")
-                return render_template('mezua.html', tituloa="Errorea",
-                                       mezua="Ezin izan da erreserba aurkitu",
+                print(f" Erreserba ezin izan da kantzelatu")
+                return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da erreserba kantzelatu:",
                                        location='/pertsonala')
+            #else:
+            #    print(f" Ez da erreserba aurkitu")
+            #    return render_template('mezua.html', tituloa="Errorea",
+            #                           mezua="Ezin izan da erreserba aurkitu",
+            #                           location='/pertsonala')
     except Exception as e:
         print(f"Errorea liburua kantzelatzeko prozesuan: {e}")
         return redirect('/pertsonala')

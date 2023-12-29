@@ -118,15 +118,12 @@ class LibraryController:
             return False  # Error durante la reserva
 
     # def lortuHistoriala(self,mailKontua,limit=6, page=0):
-    def kantzelatu_erreserba(self, erreserba):
+    def kantzelatu_erreserba(self, erabiltzaile,kopia_id):
         try:
-            if erreserba.noizEntregatuDa is None:
-                date = date = datetime.now()
-                db.update("UPDATE Erreserbatua SET noizEntregatuDa = ? WHERE LiburuKopia = ? AND Erabiltzailea = ? AND noizEntregatuDa IS NULL", (date.timestamp(), erreserba.libId,erreserba.erabiltzaile),)
-                print(f"Liburua entregatuta: {erreserba.libId}")
-                return True
-            else:
-                return False
+            date = datetime.now()
+            db.update("UPDATE Erreserbatua SET noizEntregatuDa = ? WHERE LiburuKopia = ? AND Erabiltzailea = ? AND noizEntregatuDa IS NULL", (date.timestamp(), kopia_id, erabiltzaile),)
+            print(f"Liburua entregatuta: {kopia_id}")
+            return True
         except Exception as e:
             print(f"Errorea liburua kantzelatzean: {e}")
             return False  # Error durante la reserva

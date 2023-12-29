@@ -22,7 +22,7 @@
                             {% if erreserba.noizEntregatuDa %}
                                 <h5 class="card-title"><a href="/liburua?id={{lib_info.id}}">{{lib_info.title}}</a></h5>
                             {% else %}
-                                <h5 class="card-title"><a href="/liburua2?id={{lib_info.id}}&erreserba={{erreserba}}">{{lib_info.title}}</a></h5>
+                                <h5 class="card-title"><a href="/liburua2?id={{lib_info.id}}&erab={{erreserba.erabiltzaile}}&kopia_id={{erreserba.libId}}">{{lib_info.title}}</a></h5>
                             {% endif %}
                             {% if erreserba.noizEntregatuDa %}
                                 <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
