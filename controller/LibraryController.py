@@ -65,11 +65,14 @@ class LibraryController:
         print(f"{author}")
         if author:
             # Obtener libros del mismo autor (excluyendo el libro actual)
-            related_books = [book for book in self.lortu_liburu_guztiak() if
-                             book.author == author and str(book.id) != (book_id)]
-
-            # Limitar la cantidad de libros relacionados
-            return related_books[:limit]
+            #related_books = [book for book in self.lortu_liburu_guztiak() if
+             #                book.author == author and str(book.id) != (book_id)]
+            res = db.select("SELECT l.* FROM Liburua l WHERE Egilea = ? AND Kodea != ? LIMIT 3", (author,book_id,))
+            related_books = [
+                Book(b[0], b[1], b[2], b[3], b[4])
+                for b in res
+            ]
+            return related_books
 
         return []
 
