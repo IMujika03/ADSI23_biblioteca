@@ -22,10 +22,15 @@
                             {% if erreserba.noizEntregatuDa %}
                                 <h5 class="card-title"><a href="/liburua?id={{lib_info.id}}">{{lib_info.title}}</a></h5>
                             {% else %}
-                                <h5 class="card-title"><a href="/liburua2?id={{lib_info.id}}&kopia_id={{erreserba.libId}}">{{lib_info.title}}</a></h5>
+                                <h5 class="card-title"><a href="/liburua2?id={{lib_info.id}}&erreserba={{erreserba}}">{{lib_info.title}}</a></h5>
                             {% endif %}
-                            <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
-                            <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
+                            {% if erreserba.noizEntregatuDa %}
+                                <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">Entregatu Da :{{erreserba.noizEntregatuDa}}</h6>
+                            {% else %}
+                                <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted"> <span style="color: red;">Entrega Data: {{erreserba.entrData}}</span> </h6>
+                            {% endif %}
                             {% if lib_info.cover: %}
                             <img src="{{lib_info.cover}}" class="rounded" style="max-width: 6rem; height: fit-content; float: left;">
                             {% endif %}
