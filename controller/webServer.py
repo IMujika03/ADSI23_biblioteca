@@ -81,11 +81,14 @@ def eskaerak():
     if 'user' in request.__dict__ and request.user and request.user.token:
         email = request.user.MailKontua
         if "onartu" in request.values:
-            library.onartu(email, request.values.get("korreoa"))
+            library.onartu(email, request.values.get("korreoa2"))
         elif "ezeztatu" in request.values:
-            library.ezeztatu(email, request.values.get("korreoa"))
+            library.ezeztatu(email, request.values.get("korreoa2"))
+        elif "bidali" in request.values:
+            library.bidali(email, request.values.get("korreoa"))
         erabiltzaileLista = library.lagunPosibleakLortu(request.user.MailKontua)
-        return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
+        eskaeraLista = library.eskaerak_lortu(request.user.MailKontua)
+        return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista, eskaeraLista=eskaeraLista)
     else:
         return redirect('/login')  # Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
 

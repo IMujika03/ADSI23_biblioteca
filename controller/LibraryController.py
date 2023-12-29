@@ -58,7 +58,6 @@ class LibraryController:
         return books
 
     def get_related_books_by_author(self, book_id, limit=3):
-
         # Obtener el autor del libro actual
         current_book = self.aurkitu_liburua(book_id)
         author = current_book.author if current_book else None
@@ -208,12 +207,12 @@ class LibraryController:
 	            SELECT l.Erabiltzailea1
 	            FROM lagunEgin l
 	            WHERE l.Erabiltzailea2 = ?
-	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
+	            AND l.Egoera IN (0, 1, 2) -- Excluye los rechazados, aceptados y en espera
 	            UNION
 	            SELECT l.Erabiltzailea2
 	            FROM lagunEgin l
 	            WHERE l.Erabiltzailea1 = ?
-	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
+	            AND l.Egoera IN (0, 1, 2) -- Excluye los rechazados,aceptados y en espera
 	        )
 	    """, (email, email, email))
         erabiltzaileak = [
@@ -222,18 +221,34 @@ class LibraryController:
         ]
         return erabiltzaileak
 
+    def eskaerak_lortu(self, email):
+        res = db.select("""SELECT Erabiltzailea.*
+            FROM LagunEgin 
+            JOIN Erabiltzailea ON LagunEgin.Erabiltzailea1 = Erabiltzailea.MailKontua
+            WHERE LagunEgin.Erabiltzailea2 = ? 
+            AND LagunEgin.Egoera = 2
+        """, (email,))
+        erabiltzaileak = [
+            Erabiltzailea(e[0], e[1], e[2], e[3], e[4], e[5], e[6])
+            for e in res
+        ]
+        return erabiltzaileak
+
+    def bidali(self, email1, email2):
+        baldintza = db.select("SELECT COUNT(*) FROM LagunEgin WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?)", (email1, email2, email2, email1))
+        if baldintza[0][0] == 0:
+            res = db.insert("INSERT INTO LagunEgin VALUES (?,?,2)", (email1, email2))
+
     def onartu(self, email1, email2):
         if email1 != email2:
-            count = db.select(
-                "SELECT COUNT(*) FROM LagunEgin WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?)",
-                (email1, email2, email2, email1))  # Konprobatu erabiltzaileak ez direla lagunak jada
-            if count[0][0] == 0:  # O bada, ez dira inoiz onartu lagun bezala
-                res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
+            res = db.update("UPDATE LagunEgin SET Egoera = 1 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2", (email1, email2, email2, email1))
         else:
             self.ezeztatu(email1, email2)  # Ezeztatzen da ez agertzeko berriz
 
     def ezeztatu(self, email1, email2):
-        res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
+        res = db.update(
+            "UPDATE LagunEgin SET Egoera = 0 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2",
+            (email1, email2, email2, email1))
 
     def get_all_topics(self):
         try:
