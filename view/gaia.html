@@ -6,13 +6,14 @@
     <p>{{ gaia.content }}</p>
     <ul>
         {% for komentarioa in Komentarioak %}
-            <li>{{ komentarioa.user }} esan du: {{ komentarioa.text }}</li>
+            <li>{{ komentarioa.user }} komentatu du: {{ komentarioa.text }}</li>
         {% endfor %}
     </ul>
     <form method="POST">
         <textarea name="komentarioa" rows="1" cols="50" required></textarea>
         <br>
-        <input type="submit">
+        <button type="submit" class="btn btn-primary">Komentatu</button>
+        <a href="{{ url_for('foroak') }}" class="btn btn-secondary">ATZERA</a>
     </form>
 </div>
 {% endblock %}
