@@ -172,7 +172,7 @@ class LibraryController:
 	        LIMIT ? OFFSET ?
 	        """, (email,f"%{titulua}%", limit, limit * page))
         erreserbak = [
-            Erreserbatuta(e[0], e[1], e[2], e[3],e[4])  # 4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
+            Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
             for e in res
         ]
         erreseinak = [
