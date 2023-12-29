@@ -10,7 +10,7 @@
     </a>
   <div style="margin: 10px; font-weight: bold; margin-top: -25px;">Aukerak</div>
 </div>
-<h2>Erreserbak</h2>
+<h2>Erreserben Historiala</h2>
 
 <ul class="row">
     {% if erreserbak %} <!-- Si la variable erreserbak no está vacía -->
@@ -19,8 +19,10 @@
                 <div class="card" style="width: 100%; overflow: auto;">
                     <div class="card-body" style="display: flex; flex-direction: row;">
                         <div style="width: 50%;">
-                            {% if erreserba %}
-                            <h5 class="card-title"><a href="/liburua?id={{lib_info.id}}">{{lib_info.title}}</a></h5>
+                            {% if erreserba.noizEntregatuDa %}
+                                <h5 class="card-title"><a href="/liburua?id={{lib_info.id}}">{{lib_info.title}}</a></h5>
+                            {% else %}
+                                <h5 class="card-title"><a href="/liburua2?id={{lib_info.id}}&kopia_id={{erreserba.libId}}">{{lib_info.title}}</a></h5>
                             {% endif %}
                             <h6 class="card-subtitle mb-2 text-muted">Erreserba Data:{{erreserba.erresData}}</h6>
                             <h6 class="card-subtitle mb-2 text-muted">Entrega Data:{{erreserba.entrData}}</h6>
