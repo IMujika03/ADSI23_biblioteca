@@ -2,17 +2,27 @@
 
 {% block content %}
 <div class="container p-5 my-5 border">
-<div class="check-btn-container" style="display: flex; flex-direction: column; align-items: flex-end;">
-    <a href="/aukerak" class="nav-link {% if request.path == '/aukerak' %}active{% endif %}">
-      <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
-        <img src="https://www.svgrepo.com/show/522270/settings.svg" alt="Aukerak" width="32" height="32">
+    <div class="check-btn-container" style="display: flex; flex-direction: column; align-items: flex-end;">
+        <a href="/aukerak" class="nav-link {% if request.path == '/aukerak' %}active{% endif %}">
+          <button type="button" class="btn btn-primary btn-block mb-4" style="margin: 10px; border-radius: 50%; background-color: white; color: black; border: none;">
+            <img src="https://www.svgrepo.com/show/522270/settings.svg" alt="Aukerak" width="32" height="32">
+          </button>
+        </a>
+      <div style="margin: 10px; font-weight: bold; margin-top: -25px;">Aukerak</div>
+    </div>
+    <h2>Erreserben Historiala</h2>
+    <form class="form-inline">
+      <div class="input-group mb-2 mr-sm-2">
+        <label for="title" class="col-sm-2 col-form-label">Title</label>
+        <input type="text" class="form-control mb-2" id="title" name="title" placeholder="Title" {% if title != "": %}value="{{title}}"{% endif %}>
+      </div>
+      <button type="submit" class="btn btn-primary">
+          <i class="fa fa-search"></i>
+          Search
       </button>
-    </a>
-  <div style="margin: 10px; font-weight: bold; margin-top: -25px;">Aukerak</div>
-</div>
-<h2>Erreserben Historiala</h2>
-
-<ul class="row">
+    </form>
+    <hr class="hr" />
+    <ul class="row">
     {% if erreserbak %} <!-- Si la variable erreserbak no está vacía -->
         {% for erreserba, lib_info, erreseina in zip(erreserbak, lib_info, erreseinak) %} <!-- Para cada reserva, reseña y libro en las listas -->
             <div class="col-lg-12 col-md-6 col-sm-12 my-2">
@@ -73,13 +83,13 @@
       <p>Ez daude libururik erreserbaturik.</p> <!-- Mostrar un mensaje indicando que no hay libros reservados -->
     {% endif %}
     </div>
-</ul>
+    </ul>
 
     <nav>
       <ul class="pagination justify-content-center">
           {% if current_page-3 > 1: %}
           <li class="page-item">
-              <a class="page-link" href="{{request.path}}?title={{title}}&author={{author}}&page=1" aria-label="Previous">
+              <a class="page-link" href="{{request.path}}?title={{title}}&page=1" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                   <span class="sr-only">Previous</span>
               </a>
@@ -87,12 +97,12 @@
           {% endif %}
 
         {% for page in range(max(1, current_page-3),min(total_pages+1, current_page+4)) %}
-            <li class="page-item"><a class="page-link {% if page == current_page %}active{% endif %}" href="{{request.path}}?title={{title}}&author={{author}}&page={{page}}">{{page}}</a></li>
+            <li class="page-item"><a class="page-link {% if page == current_page %}active{% endif %}" href="{{request.path}}?title={{title}}&page={{page}}">{{page}}</a></li>
         {% endfor %}
 
         {% if current_page+3 < total_pages : %}
           <li class="page-item">
-              <a class="page-link" href="{{request.path}}?title={{title}}&author={{author}}&page={{total_pages}}" aria-label="Next">
+              <a class="page-link" href="{{request.path}}?title={{title}}&page={{total_pages}}" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                   <span class="sr-only">Next</span>
               </a>
