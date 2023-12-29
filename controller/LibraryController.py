@@ -241,7 +241,11 @@ class LibraryController:
 
     def onartu(self, email1, email2):
         if email1 != email2:
-            res = db.update("UPDATE LagunEgin SET Egoera = 1 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2", (email1, email2, email2, email1))
+            count = db.select(
+                "SELECT COUNT(*) FROM LagunEgin WHERE ((Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 1)",
+                (email1, email2, email2, email1))  # Konprobatu erabiltzaileak ez direla lagunak jada
+            if count[0][0] == 0:  # O bada, ez dira inoiz onartu lagun bezala
+                res = db.update("UPDATE LagunEgin SET Egoera = 1 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2", (email1, email2, email2, email1))
         else:
             self.ezeztatu(email1, email2)  # Ezeztatzen da ez agertzeko berriz
 
