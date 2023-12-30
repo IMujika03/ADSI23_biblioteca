@@ -27,6 +27,37 @@ class TestEskaerak(BaseTestClass):
         erabiltzailea = page2.select_one('h6').getText()
         self.assertEqual('james@gmail.com', erabiltzailea) #Jasotako eskakizuna agertzen da
 
+        res2 = self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'})#Bi aldiz bidaltzen bada, nahiz eta web orritik posible ez izan
+        page = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page.find(string=' Ez daude erabiltzailerik eskakizunak bidaltzeko')
+        self.assertEqual(' Ez daude erabiltzailerik eskakizunak bidaltzeko', mezua)  #Ez da ezer aldatu
+        res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
+        self.assertEqual(2, res3[0][0])  # Berdin mantentzen da
+        self.assertEqual(1, len(res3)) #Bakarrik agertzen da behin
+
+    def test_eskakizunak_bistaratu(self):
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")  # hasieratu egoera berdinera
+        self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
+        self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
+        self.login('james@gmail.com', '123456')
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'}) #Eskakizuna bidaltzen da
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        res4 = self.client.get('/eskaerak')
+        page2 = BeautifulSoup(res4.data, features="html.parser")
+        erabiltzailea = page2.select_one('h6').getText()
+        self.assertEqual('james@gmail.com', erabiltzailea)  # Jasotako eskakizuna agertzen da
+        self.db.delete(f"DELETE FROM LagunEgin")
+
+        #proba egin eskakizunik bidali gabe
+        self.login('james@gmail.com', '123456')
+        res = self.client.get('/eskaerak')
+        page = BeautifulSoup(res.data, features="html.parser")
+        mezua = page.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua) #Errore mezua agertzen da ez badira eskakizunik jaso
+
+
     def test_onartu(self):
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")#hasieratu egoera berdinera
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
