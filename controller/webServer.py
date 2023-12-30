@@ -284,12 +284,8 @@ def liburuaSartu():
 
 @app.route('/foroak', methods=['GET', 'POST'])
 def foroak():
-    if 'user' in request.__dict__ and request.user and request.user.token:
-        topics = library.get_all_topics()
-        return render_template('foroak.html', Gaiak=topics)
-    else:
-        return redirect('/login')
-
+    topics = library.get_all_topics()
+    return render_template('foroak.html', Gaiak=topics)
 
 @app.route('/gaia', methods=['GET', 'POST'])
 def gaia():
@@ -299,7 +295,11 @@ def gaia():
     if request.method == 'POST':
         komentarioa = request.form.get("komentarioa")
         print(gaia)
-        library.komentarioaGehitu(request.user.MailKontua, gaia.title, 0, komentarioa)
+        if 'user' in request.__dict__ and request.user and request.user.token:
+            library.komentarioaGehitu(request.user.MailKontua, gaia.title, 0, komentarioa)
+        else:
+            return render_template('mezua.html', tituloa="Ezin da komentatu",
+                                   mezua="Komentatzeko logeatu behar zara", location='/login')
     else:
         if gaia is None:
             # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
@@ -313,10 +313,14 @@ def gaia():
 
 @app.route('/gaiaSortu', methods=['POST'])
 def gaiaSortu():
-    izenburua = request.values.get("nuevoTitulo", "")
-    deskribapena = request.values.get("nuevaDeskribapena", "")
-    topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
-    return redirect('/gaia?id={}'.format(topic.id))
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        izenburua = request.values.get("nuevoTitulo", "")
+        deskribapena = request.values.get("nuevaDeskribapena", "")
+        topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
+        return redirect('/gaia?id={}'.format(topic.id))
+    else:
+        return render_template('mezua.html', tituloa="Ezin da gaia sortu",
+                               mezua="Gaiak sortzeko logeatu behar zara", location='/login')
 
 
 @app.route('/komentatu', methods=['POST'])
@@ -326,3 +330,4 @@ def Komentatu():
     komentarioa_string = request.values.get("komentarioa", "")
     komentarioa = topic.sortu_komentarioa(komentarioa_string)
     return redirect('/gaia?id={}'.format(topic.id))
+
