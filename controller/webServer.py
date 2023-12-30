@@ -300,12 +300,6 @@ def gaia():
         else:
             return render_template('mezua.html', tituloa="Ezin da komentatu",
                                    mezua="Komentatzeko logeatu behar zara", location='/login')
-    else:
-        if gaia is None:
-            # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
-            return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
-                                   mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
-
     komentarioak = library.get_comments_for_topic(gaia)
     print(komentarioak)
     return render_template('gaia.html', gaia=gaia, Komentarioak=komentarioak)
