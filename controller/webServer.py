@@ -51,7 +51,7 @@ def pertsonala():
     title = request.values.get("title", "")
     if 'user' in request.__dict__ and request.user and request.user.token:
         email = request.user.MailKontua
-        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(titulua= title,email=email, page=page - 1)
+        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(title= title,email=email, page=page - 1)
         total_pages = (nb_erreserbak // 6) + 1
         return render_template('pertsonala.html', title=title,erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info,
                                current_page=page,

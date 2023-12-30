@@ -49,13 +49,13 @@ class LibraryController:
             print(f"Errorea aurkitu_liburua: {e}")
             return None
 
-    def lortu_liburu_guztiak(self):
-        res = db.select("SELECT l.* FROM Liburua l")
-        books = [
-            Book(b[0], b[1], b[2], b[3], b[4])
-            for b in res
-        ]
-        return books
+    #def lortu_liburu_guztiak(self):
+    #    res = db.select("SELECT l.* FROM Liburua l")
+    #    books = [
+    #        Book(b[0], b[1], b[2], b[3], b[4])
+    #        for b in res
+    #    ]
+    #    return books
 
     def get_related_books_by_author(self, book_id, limit=3):
         # Obtener el autor del libro actual
@@ -149,7 +149,7 @@ class LibraryController:
         else:
             return None
 
-    def search_erreserbak(self, titulua, email, limit=6, page=0):
+    def search_erreserbak(self, title, email, limit=6, page=0):
         count = db.select("""
 	        SELECT COUNT (*)
 	        FROM Liburu_Kopiak k
@@ -170,7 +170,7 @@ class LibraryController:
 	        ON l.Kodea = v.Liburua AND e.Erabiltzailea = v.Erabiltzailea
 	        WHERE e.Erabiltzailea = ? AND l.Izenburua LIKE ?
 	        LIMIT ? OFFSET ?
-	        """, (email,f"%{titulua}%", limit, limit * page))
+	        """, (email,f"%{title}%", limit, limit * page))
         erreserbak = [
             Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
             for e in res
