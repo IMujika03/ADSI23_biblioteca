@@ -321,13 +321,3 @@ def gaiaSortu():
     else:
         return render_template('mezua.html', tituloa="Ezin da gaia sortu",
                                mezua="Gaiak sortzeko logeatu behar zara", location='/login')
-
-
-@app.route('/komentatu', methods=['POST'])
-def Komentatu():
-    topic_id = request.values.get("id", -1)
-    topic = library.get_topic_by_id(topic_id)
-    komentarioa_string = request.values.get("komentarioa", "")
-    komentarioa = topic.sortu_komentarioa(komentarioa_string)
-    return redirect('/gaia?id={}'.format(topic.id))
-
