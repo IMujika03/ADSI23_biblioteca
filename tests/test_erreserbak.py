@@ -22,7 +22,7 @@ class TestErreserbak(BaseTestClass):
         #Liburu bakoitzaren kopia bakarra dagoenez erabilgarri liburu bereko beste kopia bat eskatu nahai bada ez da datu basean sartuko
         res4 = self.client.post('/erreserbatu', data={'libro_id': book_id})
         self.assertEqual(200, res4.status_code)
-        res5 = self.db.select("SELECT COUNT(*) FROM Erreserbatua WHERE Erabiltzailea = ? AND LiburuKopia = ?", ('james@gmail.com', book_id))[0][0]
+        res5 = self.db.select("SELECT COUNT(*) FROM Erreserbatua WHERE Erabiltzailea = ? AND LiburuKopia = ? AND noizEntregatuDa IS NULL", ('james@gmail.com', book_id))[0][0]
         self.assertEqual(1, res5)
         #Baita beste erabiltzaile batek liburu bera nahi badu ez dio utziko:
         self.client.get('/logout')  # aurreko saioa itxi
@@ -54,5 +54,28 @@ class TestErreserbak(BaseTestClass):
         mezua = page2.find(string="Ez daude libururik erreserbaturik.")
         self.assertEqual('Ez daude libururik erreserbaturik.', mezua)#Erreserbarik ez daudelakoe errore mezua ikusten da
 
-    #def test_kantzelatu_erreserba(self):
-     #   self.db.delete("DELETE FROM Erreserbatua WHERE noizEntregatuDa IS NULL")
+    def test_kantzelatu_erreserba(self):
+        self.db.delete("DELETE FROM Erreserbatua WHERE noizEntregatuDa IS NULL")
+        #Erreserbatze partea
+        self.login('james@gmail.com', '123456')  # add assertion here
+        book_id = 260
+        res = self.client.get('/liburuBista')
+        page = BeautifulSoup(res.data, features="html.parser")
+        # Egin erreserbatzea
+        res2 = self.client.post('/erreserbatu', data={'libro_id': book_id})
+        self.assertEqual(200, res2.status_code)  # ondo bidali dela konprobatu
+        # pantailaz salto egiten du mezu.html-ra eta hori kontrobatu
+        page = BeautifulSoup(res2.data, features="html.parser")
+        # Baita datu basean konprobatu
+        res3 = self.db.select(f"SELECT * FROM Erreserbatua WHERE Erabiltzailea = ? AND noizEntregatuDa IS NULL",
+                              ('james@gmail.com',))
+        self.assertIsNotNone(res3)
+        res4 = self.client.get('/liburuKantzela')
+        page2 = BeautifulSoup(res4.data, features="html.parser")
+        erab = self.db.select("SELECT Erabiltzailea FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
+        kopia_id = self.db.select("SELECT LiburuKopia FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
+        #Egin kantzelazioa
+        res5 = self.client.post('/kantzelatu', data={'libro_id': book_id, 'erabiltzaile': erab, 'kopia_id': kopia_id})
+        self.assertEqual(200, res5.status_code)
+        res6 = self.db.select("SELECT COUNT(*) FROM Erreserbatua WHERE Erabiltzailea = ? AND LiburuKopia = ? AND noizEntregatuDa IS NULL", ('james@gmail.com', kopia_id),)[0][0]
+        self.assertEqual(0, res6)
