@@ -1,4 +1,3 @@
-from . import Erabiltzailea
 from .Connection import Connection
 from .Komentarioa import Komentarioa
 from datetime import datetime

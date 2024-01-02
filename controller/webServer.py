@@ -285,3 +285,37 @@ def Komentatu():
     komentarioa_string = request.values.get("komentarioa", "")
     komentarioa = topic.sortu_komentarioa(komentarioa_string)
     return redirect('/gaia?id={}'.format(topic.id))
+
+
+@app.route('/editatu', methods=['POST'])
+def ErreseinaEditatu():
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        if "liburua" in request.values and "erabiltzailea" in request.values:
+            liburua = request.values.get("liburua")
+            erabiltzailea = request.values.get("erabiltzailea")
+
+            # Erreseinen datu berriak jaso
+            puntuaketa = request.values.get("puntuaketa")
+            komentarioa = request.values.get("komentarioa")
+
+            # Datu basea aktualizatu
+            library.editarErresina(liburua, erabiltzailea, puntuaketa, komentarioa)
+
+            # Erreseina editatu ta gero pertsonalara eraman
+            return redirect('/pertsonala')
+        else:
+            # Manejar el caso en el que los datos no estén completos
+            flash('Faltan datos para editar la reseña', 'error')
+            return redirect('/pertsonala')  # O redirige a donde desees
+    else:
+        return redirect('/login')
+
+@app.route('/erreseinak_pantailaratu')
+def erreseinak_pantailaratu():
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        # Datu basetik erreseinak guztiak izan
+        erreseinak = library.getErreseinak()  # Library Controller-ko metodoari deitu
+
+        return render_template('erreseinak_pantailaratu.html', erreseinak=erreseinak)
+    else:
+        return redirect('/login')  # Redirigir al usuario a la página de inicio de sesión si no está autenticado

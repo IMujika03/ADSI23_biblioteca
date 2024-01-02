@@ -334,3 +334,67 @@ class LibraryController:
     def liburuaGehitu(self, lib):
         db.insert("INSERT INTO Liburua (Izenburua, Egilea, Portada, Deskribapena) VALUES (?, ?, ?, ?)",
                   (lib.title, lib.author, lib.cover, lib.description))
+
+    def getErreseinak(self, book_title):
+        try:
+            res = db.select("""
+                    SELECT e.*, u.MailKontua
+                    FROM Erreseina e
+                    INNER JOIN Erabiltzailea u ON e.Erabiltzailea = u.MailKontua
+                    WHERE e.Liburua = ?
+                """, (book_title,))
+            erreseinak = [
+                {
+                    'id': review[0],
+                    'user': review[1],  # Cambiado para mostrar la cuenta de correo
+                    'puntuaketa': review[2],
+                    'komentarioa': review[3]
+                }
+                for review in res
+            ]
+            return erreseinak
+        except Exception as e:
+            print(f"Errorea getErreseinak: {e}")
+            return []
+
+    def getErreseinak(self):
+        try:
+            res = db.select("""
+                    SELECT e.*, u.MailKontua
+                    FROM Erreseina e
+                    INNER JOIN Erabiltzailea u ON e.Erabiltzailea = u.MailKontua
+                """)
+            erreseinak = [
+                {
+                    'id': review[0],
+                    'user': review[1],  # Cambiado para mostrar la cuenta de correo
+                    'puntuaketa': review[2],
+                    'komentarioa': review[3]
+                }
+                for review in res
+            ]
+            return erreseinak
+        except Exception as e:
+            print(f"Errorea getErreseinak: {e}")
+            return []
+
+    def sortu_erreseina(self, komentarioa, puntuaketa, MailKontua, Liburua):
+        try:
+            date = datetime.now()
+            db.insert("""
+                INSERT INTO Erreseina (Komentarioa, Puntuaketa, Erabiltzailea, Liburua, Data)
+                VALUES (?, ?, ?, ?, ?)
+            """, (komentarioa, puntuaketa, MailKontua, Liburua, date.timestamp()))
+
+            # Opcional: Recuperar y devolver el objeto Erreseina recién creado
+            res = db.select(
+                "SELECT * FROM Erreseina WHERE Komentarioa = ? AND Puntuaketa = ? AND Erabiltzailea = ? AND Liburua = ?",
+                (komentarioa, puntuaketa, MailKontua, Liburua))
+            if res:
+                # Suponiendo que Erreseina es una clase con atributos correspondientes
+                return Erreseina(res[0][0], res[0][1], res[0][2], res[0][3], res[0][4])
+            else:
+                return None
+        except Exception as e:
+            print(f"Errorea sortu_erreseina: {e}")
+            return None
