@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container p-5 my-5 border">
-    <h1>Eskaerak</h1>
+    <h1>Eskaerak bidali</h1>
     {% if erabiltzaileLista %}
         {% for erab in erabiltzaileLista %}
             <div class="col-lg-12 col-md-6 col-sm-12 my-2">
@@ -11,8 +11,7 @@
                     <h6 class="card-subtitle mb-2 text-muted" style="display: flex; justify-content: center; align-items: center; margin: 3px " >{{erab.MailKontua}}</h6>
                     <div class="card-footer" style="display: flex; justify-content: center; align-items: center; ">
                         <form method="POST">
-                            <input type="submit" style="background-color: lightblue; color: black; margin: 10px; border-radius: 5px;" value="onartu" id="onartu" name="onartu">
-                            <input type="submit" style="background-color: lightcoral; color: black; margin: 10px; border-radius: 5px;" value="ezeztatu" id="ezeztatu" name="ezeztatu">
+                            <input type="submit" style="background-color: #42a5c2; color: black; margin: 10px; border-radius: 5px;" value="bidali" id="bidali" name="bidali">
                             <input type="hidden" value="{{erab.MailKontua}}" id="korreoa" name="korreoa">
                         </form>
                     </div>
@@ -20,7 +19,26 @@
             </div>
         {% endfor %}
     {% else %}
-        <h5> Ez daude erabiltzailerik lagunak izateko</h5>
+        <h5> Ez daude erabiltzailerik eskakizunak bidaltzeko</h5>
+    {% endif %}
+    <h1>Eskaerak kudeatu</h1>
+    {% if eskaeraLista %}
+        {% for erab in eskaeraLista %}
+            <div class="col-lg-12 col-md-6 col-sm-12 my-2">
+                <div class="card" style="width: 77rem; overflow: auto;">
+                    <h6 class="card-subtitle mb-2 text-muted" style="display: flex; justify-content: center; align-items: center; margin: 3px " >{{erab.MailKontua}}</h6>
+                    <div class="card-footer" style="display: flex; justify-content: center; align-items: center; ">
+                        <form method="POST">
+                            <input type="submit" style="background-color: lightblue; color: black; margin: 10px; border-radius: 5px;" value="onartu" id="onartu" name="onartu">
+                            <input type="submit" style="background-color: lightcoral; color: black; margin: 10px; border-radius: 5px;" value="ezeztatu" id="ezeztatu" name="ezeztatu">
+                            <input type="hidden" value="{{erab.MailKontua}}" id="korreoa2" name="korreoa2">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h5> Ez dira eskakizunik jaso</h5>
     {% endif %}
 </div>
 

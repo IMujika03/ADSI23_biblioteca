@@ -2,6 +2,62 @@ from . import BaseTestClass
 from bs4 import BeautifulSoup
 
 class TestEskaerak(BaseTestClass):
+
+    def test_adiskidetasuna_eskatu(self):
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")  # hasieratu egoera berdinera
+        self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
+        self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
+        self.login('james@gmail.com', '123456')
+        res = self.client.get('/eskaerak')
+        page = BeautifulSoup(res.data, features="html.parser")
+        erabiltzailea = page.select_one('h6').getText()
+        self.assertEqual('jhon@gmail.com', erabiltzailea)  # Berez, lagunakOnartzekoAukera gaituta duen bakarra
+        res2 = self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'})
+        self.assertEqual(200, res2.status_code)#Ondo bidali da
+        page = BeautifulSoup(res2.data, features="html.parser") #orria aldatu da
+        mezua = page.find(string=' Ez daude erabiltzailerik eskakizunak bidaltzeko')
+        self.assertEqual(' Ez daude erabiltzailerik eskakizunak bidaltzeko', mezua)# Eskakizuna desagertu da
+        res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
+        self.assertEqual(2, res3[0][0])  # 2 da, itxaroten dagoelako
+        self.client.get('/logout')#aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        res4 = self.client.get('/eskaerak')
+        page2 = BeautifulSoup(res4.data, features="html.parser")
+        erabiltzailea = page2.select_one('h6').getText()
+        self.assertEqual('james@gmail.com', erabiltzailea) #Jasotako eskakizuna agertzen da
+
+        res2 = self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'})#Bi aldiz bidaltzen bada, nahiz eta web orritik posible ez izan
+        page = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page.find(string=' Ez daude erabiltzailerik eskakizunak bidaltzeko')
+        self.assertEqual(' Ez daude erabiltzailerik eskakizunak bidaltzeko', mezua)  #Ez da ezer aldatu
+        res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
+        self.assertEqual(2, res3[0][0])  # Berdin mantentzen da
+        self.assertEqual(1, len(res3)) #Bakarrik agertzen da behin
+
+    def test_eskakizunak_bistaratu(self):
+        self.db.update(
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")  # hasieratu egoera berdinera
+        self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
+        self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
+        self.login('james@gmail.com', '123456')
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'}) #Eskakizuna bidaltzen da
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        res4 = self.client.get('/eskaerak')
+        page2 = BeautifulSoup(res4.data, features="html.parser")
+        erabiltzailea = page2.select_one('h6').getText()
+        self.assertEqual('james@gmail.com', erabiltzailea)  # Jasotako eskakizuna agertzen da
+        self.db.delete(f"DELETE FROM LagunEgin")
+
+        #proba egin eskakizunik bidali gabe
+        self.login('james@gmail.com', '123456')
+        res = self.client.get('/eskaerak')
+        page = BeautifulSoup(res.data, features="html.parser")
+        mezua = page.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua) #Errore mezua agertzen da ez badira eskakizunik jaso
+
+
     def test_onartu(self):
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")#hasieratu egoera berdinera
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
@@ -9,14 +65,14 @@ class TestEskaerak(BaseTestClass):
         self.login('james@gmail.com', '123456')
         res = self.client.get('/eskaerak')
         self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
-        page = BeautifulSoup(res.data, features="html.parser")
-        erabiltzailea = page.select_one('h6').getText()
-        self.assertEqual('jhon@gmail.com',erabiltzailea)# Berez, lagunakOnartzekoAukera gaituta duen bakarra
-        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa': 'jhon@gmail.com'})
-        self.assertEqual(200, res2.status_code)#Ondo egin da eskakizuna
-        page2 = BeautifulSoup(res2.data, features="html.parser")  # orria aldatu da
-        mezua = page2.find(string=' Ez daude erabiltzailerik lagunak izateko')
-        self.assertEqual(' Ez daude erabiltzailerik lagunak izateko', mezua) #Eskaera kendu da
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'}) #Bidali eskakizuna
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        self.client.get('/eskaerak')
+        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa2': 'james@gmail.com'})
+        page2 = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page2.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua)#Eskakizuna desagertu da
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
         self.assertEqual(1, res3[0][0])  # 1 da, onartu delako
 
@@ -27,42 +83,63 @@ class TestEskaerak(BaseTestClass):
         self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
         self.login('james@gmail.com', '123456')
         res = self.client.get('/eskaerak')
-        page = BeautifulSoup(res.data, features="html.parser")
-        res2 = self.client.post('/eskaerak', data={'ezeztatu': 'ezeztatu', 'korreoa': 'jhon@gmail.com'})
-        self.assertEqual(200, res2.status_code)  # Ondo egin da eskakizuna
-        page2 = BeautifulSoup(res2.data, features="html.parser")  # orria aldatu da
-        mezua = page2.find(string=' Ez daude erabiltzailerik lagunak izateko')
-        self.assertEqual(' Ez daude erabiltzailerik lagunak izateko', mezua)  # Eskaera kendu da
+        self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'})  # Bidali eskakizuna
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        self.client.get('/eskaerak')
+        res2 = self.client.post('/eskaerak', data={'ezeztatu': 'ezeztatu', 'korreoa2': 'james@gmail.com'})
+        page2 = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page2.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua)  # Eskakizuna desagertu da
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
-        self.assertEqual(0, res3[0][0])  # 0 da, ez delako onartu
+        self.assertEqual(0, res3[0][0])  # 0 da, ezeztatu delako
 
     def test_onartu_bere_burua(self): #Hau ezin da egin web orrian, ez delako aukerarik ematen
         self.db.update(
-            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 0 WHERE MailKontua = 'james@gmail.com'")
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")  # hasieratu egoera berdinera
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
-        self.db.delete(f"DELETE FROM LagunEgin")
+        self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
         self.login('james@gmail.com', '123456')
         res = self.client.get('/eskaerak')
-        page = BeautifulSoup(res.data, features="html.parser")
-        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa': 'james@gmail.com'})
-        self.assertEqual(200, res2.status_code)  # Ondo egin da eskakizuna
+        self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'james@gmail.com'})  # Bidali eskakizuna
+        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa2': 'james@gmail.com'})
+        page2 = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page2.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua)  # Eskakizuna desagertu da
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
-        self.assertEqual(0, res3[0][0])  # 0 da, ez delako onartu
+        self.assertEqual(0, res3[0][0])  # 0 da, ezeztatu direlako eskakizuna berriz ez agertzeko
 
-    def test_onartu_erab_bera(self): #Ez da aukerarik ematen web orrian laguna den erabiltzaile bat berriro onartzeko, baina, test-a egindo da
+    def test_onartu_bi_aldiz(self): #Ez da aukerarik ematen web orrian laguna den erabiltzaile bat berriro onartzeko, baina, test-a egindo da
         self.db.update(
-            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")
+            f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'james@gmail.com'")  # hasieratu egoera berdinera
         self.db.update(f"UPDATE Erabiltzailea SET lagunakOnartzekoAukera = 1 WHERE MailKontua = 'jhon@gmail.com'")
-        self.db.delete(f"DELETE FROM LagunEgin")
+        self.db.delete(f"DELETE FROM LagunEgin")  # Aurretik zegoen informazioa ezabatu test-ak errepikatu ahal izateko
         self.login('james@gmail.com', '123456')
-        self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa': 'jhon@gmail.com'})
+        res = self.client.get('/eskaerak')
+        self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'})  # Bidali eskakizuna
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        self.client.get('/eskaerak')
+        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa2': 'james@gmail.com'})
+        page2 = BeautifulSoup(res2.data, features="html.parser")
+        mezua = page2.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua)  # Eskakizuna desagertu da
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
         self.assertEqual(1, res3[0][0])  # 1 da, onartu delako
-        self.assertEqual(1, len(res3)) #Bakarrik agertzen da behin
-        self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa': 'jhon@gmail.com'}) # Saiatu berriro onartzen
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('james@gmail.com', '123456')
+        res = self.client.get('/eskaerak')
+        self.client.post('/eskaerak', data={'bidali': 'bidali', 'korreoa': 'jhon@gmail.com'}) #bidali berriz
+        self.client.get('/logout')  # aurreko saioa itxi
+        self.login('jhon@gmail.com', '123')
+        self.client.get('/eskaerak')
+        res2 = self.client.post('/eskaerak', data={'onartu': 'onartu', 'korreoa2': 'james@gmail.com'})
         res3 = self.db.select(f"SELECT Egoera FROM LagunEgin WHERE Erabiltzailea1 = 'james@gmail.com'")
         self.assertEqual(1, res3[0][0])  # Ez da aldatu
-        self.assertEqual(1, len(res3))  # Bakarrik agertzen da behin, ez da berriro gehitu
+        self.assertEqual(1, len(res3)) #Bakarrik agertzen da behin
 
     def test_onartzeko_erabiltzailerik_ez(self):
         self.db.update(
@@ -71,6 +148,7 @@ class TestEskaerak(BaseTestClass):
         self.login('james@gmail.com', '123456')
         res = self.client.get('/eskaerak')
         page = BeautifulSoup(res.data, features="html.parser")
-        mezua = page.find(string=' Ez daude erabiltzailerik lagunak izateko')
-        self.assertEqual(' Ez daude erabiltzailerik lagunak izateko', mezua) #Errore mezua agertzen da
-
+        mezua = page.find(string=' Ez dira eskakizunik jaso')
+        self.assertEqual(' Ez dira eskakizunik jaso', mezua) #Errore mezua ez badira eskakizunik jaso
+        mezua = page.find(string=' Ez daude erabiltzailerik eskakizunak bidaltzeko')
+        self.assertEqual(' Ez daude erabiltzailerik eskakizunak bidaltzeko', mezua)  # Errore mezua ez badaude erabiltzailerik eskakizunak bidaltzeko

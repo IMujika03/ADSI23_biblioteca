@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+    <div class="card d-flex flex-row" style="width: 22rem;">
+      {% if book.cover: %}
+        <img src="{{book.cover}}" class="rounded" style="max-width: 6rem; height: fit-content;">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{book.title}}</a></h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{book.author}}</h6>
+        {% if book.description: %}
+        <p class="card-text">{{book.description}}</p>
+        {% endif %}
+        <div class="d-flex justify-content-between">
+           <form id="kantzelaForm" action="{{ url_for('kantzelatu_liburua') }}" method="POST">
+            <input type="hidden" name="libro_id" value="{{book.id}}">
+            <input type="hidden" name="erabiltzaile" value="{{erabiltzaile}}">
+             <input type="hidden" name="kopia_id" value="{{kopia_id}}">
+            <button type="submit" class="btn btn-primary">KANTZELATU</button>
+          </form>
+          <a href="{{ url_for('pertsonala') }}" class="btn btn-secondary">ATZERA</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
