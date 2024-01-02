@@ -49,29 +49,27 @@ class LibraryController:
             print(f"Errorea aurkitu_liburua: {e}")
             return None
 
-    #def lortu_liburu_guztiak(self):
-    #    res = db.select("SELECT l.* FROM Liburua l")
-    #    books = [
-    #        Book(b[0], b[1], b[2], b[3], b[4])
-    #        for b in res
-    #    ]
-    #    return books
+    def lortu_liburu_guztiak(self):
+        res = db.select("SELECT l.* FROM Liburua l")
+        books = [
+            Book(b[0], b[1], b[2], b[3], b[4])
+            for b in res
+        ]
+        return books
 
     def get_related_books_by_author(self, book_id, limit=3):
+
         # Obtener el autor del libro actual
         current_book = self.aurkitu_liburua(book_id)
         author = current_book.author if current_book else None
         print(f"{author}")
         if author:
             # Obtener libros del mismo autor (excluyendo el libro actual)
-            #related_books = [book for book in self.lortu_liburu_guztiak() if
-             #                book.author == author and str(book.id) != (book_id)]
-            res = db.select("SELECT l.* FROM Liburua l WHERE Egilea = ? AND Kodea != ? LIMIT 3", (author,book_id,))
-            related_books = [
-                Book(b[0], b[1], b[2], b[3], b[4])
-                for b in res
-            ]
-            return related_books
+            related_books = [book for book in self.lortu_liburu_guztiak() if
+                             book.author == author and str(book.id) != (book_id)]
+
+            # Limitar la cantidad de libros relacionados
+            return related_books[:limit]
 
         return []
 
@@ -120,15 +118,6 @@ class LibraryController:
             return False  # Error durante la reserva
 
     # def lortuHistoriala(self,mailKontua,limit=6, page=0):
-    def kantzelatu_erreserba(self, erabiltzaile,kopia_id):
-        try:
-            date = datetime.now()
-            db.update("UPDATE Erreserbatua SET noizEntregatuDa = ? WHERE LiburuKopia = ? AND Erabiltzailea = ? AND noizEntregatuDa IS NULL", (date.timestamp(), kopia_id, erabiltzaile),)
-            print(f"Liburua entregatuta: {kopia_id}")
-            return True
-        except Exception as e:
-            print(f"Errorea liburua kantzelatzean: {e}")
-            return False  # Error durante la reserva
 
     def get_user(self, email, password):
         emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?",
@@ -149,7 +138,7 @@ class LibraryController:
         else:
             return None
 
-    def search_erreserbak(self, title, email, limit=6, page=0):
+    def search_erreserbak(self, email, limit=6, page=0):
         count = db.select("""
 	        SELECT COUNT (*)
 	        FROM Liburu_Kopiak k
@@ -168,11 +157,11 @@ class LibraryController:
 	        ON k.KopiaID = e.LiburuKopia
 	        LEFT JOIN Erreseina v
 	        ON l.Kodea = v.Liburua AND e.Erabiltzailea = v.Erabiltzailea
-	        WHERE e.Erabiltzailea = ? AND l.Izenburua LIKE ?
+	        WHERE e.Erabiltzailea = ? 
 	        LIMIT ? OFFSET ?
-	        """, (email,f"%{title}%", limit, limit * page))
+	        """, (email, limit, limit * page))
         erreserbak = [
-            Erreserbatuta(e[0], e[1], e[2], e[3], e[4])
+            Erreserbatuta(e[0], e[1], e[2], e[3])  # 4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
             for e in res
         ]
         erreseinak = [
@@ -207,12 +196,12 @@ class LibraryController:
 	            SELECT l.Erabiltzailea1
 	            FROM lagunEgin l
 	            WHERE l.Erabiltzailea2 = ?
-	            AND l.Egoera IN (0, 1, 2) -- Excluye los rechazados, aceptados y en espera
+	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
 	            UNION
 	            SELECT l.Erabiltzailea2
 	            FROM lagunEgin l
 	            WHERE l.Erabiltzailea1 = ?
-	            AND l.Egoera IN (0, 1, 2) -- Excluye los rechazados,aceptados y en espera
+	            AND l.Egoera IN (0, 1) -- Excluye los rechazados y los aceptados
 	        )
 	    """, (email, email, email))
         erabiltzaileak = [
@@ -221,38 +210,18 @@ class LibraryController:
         ]
         return erabiltzaileak
 
-    def eskaerak_lortu(self, email):
-        res = db.select("""SELECT Erabiltzailea.*
-            FROM LagunEgin 
-            JOIN Erabiltzailea ON LagunEgin.Erabiltzailea1 = Erabiltzailea.MailKontua
-            WHERE LagunEgin.Erabiltzailea2 = ? 
-            AND LagunEgin.Egoera = 2
-        """, (email,))
-        erabiltzaileak = [
-            Erabiltzailea(e[0], e[1], e[2], e[3], e[4], e[5], e[6])
-            for e in res
-        ]
-        return erabiltzaileak
-
-    def bidali(self, email1, email2):
-        baldintza = db.select("SELECT COUNT(*) FROM LagunEgin WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?)", (email1, email2, email2, email1))
-        if baldintza[0][0] == 0:
-            res = db.insert("INSERT INTO LagunEgin VALUES (?,?,2)", (email1, email2))
-
     def onartu(self, email1, email2):
         if email1 != email2:
             count = db.select(
-                "SELECT COUNT(*) FROM LagunEgin WHERE (((Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?)) AND Egoera = 1)",
+                "SELECT COUNT(*) FROM LagunEgin WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?)",
                 (email1, email2, email2, email1))  # Konprobatu erabiltzaileak ez direla lagunak jada
             if count[0][0] == 0:  # O bada, ez dira inoiz onartu lagun bezala
-                res = db.update("UPDATE LagunEgin SET Egoera = 1 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2", (email1, email2, email2, email1))
+                res = db.insert("INSERT INTO LagunEgin VALUES (?,?,1)", (email1, email2))
         else:
             self.ezeztatu(email1, email2)  # Ezeztatzen da ez agertzeko berriz
 
     def ezeztatu(self, email1, email2):
-        res = db.update(
-            "UPDATE LagunEgin SET Egoera = 0 WHERE (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) OR (Erabiltzailea1 = ? AND Erabiltzailea2 = ?) AND Egoera = 2",
-            (email1, email2, email2, email1))
+        res = db.insert("INSERT INTO LagunEgin VALUES (?,?,0)", (email1, email2))
 
     def get_all_topics(self):
         try:
@@ -365,3 +334,67 @@ class LibraryController:
     def liburuaGehitu(self, lib):
         db.insert("INSERT INTO Liburua (Izenburua, Egilea, Portada, Deskribapena) VALUES (?, ?, ?, ?)",
                   (lib.title, lib.author, lib.cover, lib.description))
+
+    def getErreseinak(self, book_title):
+        try:
+            res = db.select("""
+                    SELECT e.*, u.MailKontua
+                    FROM Erreseina e
+                    INNER JOIN Erabiltzailea u ON e.Erabiltzailea = u.MailKontua
+                    WHERE e.Liburua = ?
+                """, (book_title,))
+            erreseinak = [
+                {
+                    'id': review[0],
+                    'user': review[1],  # Cambiado para mostrar la cuenta de correo
+                    'puntuaketa': review[2],
+                    'komentarioa': review[3]
+                }
+                for review in res
+            ]
+            return erreseinak
+        except Exception as e:
+            print(f"Errorea getErreseinak: {e}")
+            return []
+
+    def getErreseinak(self):
+        try:
+            res = db.select("""
+                    SELECT e.*, u.MailKontua
+                    FROM Erreseina e
+                    INNER JOIN Erabiltzailea u ON e.Erabiltzailea = u.MailKontua
+                """)
+            erreseinak = [
+                {
+                    'id': review[0],
+                    'user': review[1],  # Cambiado para mostrar la cuenta de correo
+                    'puntuaketa': review[2],
+                    'komentarioa': review[3]
+                }
+                for review in res
+            ]
+            return erreseinak
+        except Exception as e:
+            print(f"Errorea getErreseinak: {e}")
+            return []
+
+    def sortu_erreseina(self, komentarioa, puntuaketa, MailKontua, Liburua):
+        try:
+            date = datetime.now()
+            db.insert("""
+                INSERT INTO Erreseina (Komentarioa, Puntuaketa, Erabiltzailea, Liburua, Data)
+                VALUES (?, ?, ?, ?, ?)
+            """, (komentarioa, puntuaketa, MailKontua, Liburua, date.timestamp()))
+
+            # Opcional: Recuperar y devolver el objeto Erreseina recién creado
+            res = db.select(
+                "SELECT * FROM Erreseina WHERE Komentarioa = ? AND Puntuaketa = ? AND Erabiltzailea = ? AND Liburua = ?",
+                (komentarioa, puntuaketa, MailKontua, Liburua))
+            if res:
+                # Suponiendo que Erreseina es una clase con atributos correspondientes
+                return Erreseina(res[0][0], res[0][1], res[0][2], res[0][3], res[0][4])
+            else:
+                return None
+        except Exception as e:
+            print(f"Errorea sortu_erreseina: {e}")
+            return None

@@ -48,12 +48,11 @@ def besteak():
 @app.route('/pertsonala')
 def pertsonala():
     page = int(request.values.get("page", 1))
-    title = request.values.get("title", "")
     if 'user' in request.__dict__ and request.user and request.user.token:
         email = request.user.MailKontua
-        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(title= title,email=email, page=page - 1)
+        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page - 1)
         total_pages = (nb_erreserbak // 6) + 1
-        return render_template('pertsonala.html', title=title,erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info,
+        return render_template('pertsonala.html', erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info,
                                current_page=page,
                                total_pages=total_pages, max=max, min=min)
     else:
@@ -78,14 +77,11 @@ def eskaerak():
     if 'user' in request.__dict__ and request.user and request.user.token:
         email = request.user.MailKontua
         if "onartu" in request.values:
-            library.onartu(email, request.values.get("korreoa2"))
+            library.onartu(email, request.values.get("korreoa"))
         elif "ezeztatu" in request.values:
-            library.ezeztatu(email, request.values.get("korreoa2"))
-        elif "bidali" in request.values:
-            library.bidali(email, request.values.get("korreoa"))
+            library.ezeztatu(email, request.values.get("korreoa"))
         erabiltzaileLista = library.lagunPosibleakLortu(request.user.MailKontua)
-        eskaeraLista = library.eskaerak_lortu(request.user.MailKontua)
-        return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista, eskaeraLista=eskaeraLista)
+        return render_template('eskaerak.html', erabiltzaileLista=erabiltzaileLista)
     else:
         return redirect('/login')  # Saioa itxi da edo zati honetara heldu da saio barik--> saioa hasi berriz
 
@@ -114,6 +110,14 @@ def liburua():
         return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu",
                                location='/catalogue')
 
+
+@app.route('/liburua')
+def liburua2():
+    book_id = request.values.get("id", "")
+    mail = request.user.MailKontua
+    erreserba = library.aurkitu_erreserba(book_id, mail)
+
+
 @app.route('/erreserbatu', methods=['POST'])
 def erreserbatu_liburua():
     try:
@@ -138,51 +142,6 @@ def erreserbatu_liburua():
     except Exception as e:
         print(f"Errorea liburua erreserbatzeko prozesuan: {e}")
         return redirect('/catalogue')
-
-@app.route('/liburua2')
-def liburua2():
-    book_id = request.values.get("id", "")
-    erabiltzaile = request.values.get("erab", "")
-    kopia_id = request.values.get("kopia_id", "")
-
-   # print(f"erreserba : {erreserba}")
-   # print(f"erreserba : {type(erreserba)}")
-    liburua = library.aurkitu_liburua(book_id)
-    if liburua :
-        return render_template('liburuKantzela.html', book=liburua, erabiltzaile=erabiltzaile, kopia_id=kopia_id)
-    else:
-        print(f" ID hau duen liburua ez da aurkitu: {book_id}")
-        return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu",
-                               location='/pertsonala')
-@app.route('/kantzelatu', methods=['POST'])
-def kantzelatu_liburua():
-    try:
-        if 'user' not in dir(request) or not request.user or not request.user.token:
-            # Por si acaso no esta logeado aunque no deberia de pasar
-            return redirect('/login')
-        else:
-            erabiltzaile = request.form.get('erabiltzaile')
-            kopia_id = request.form.get('kopia_id')
-            #book_id = request.form.get('libro_id')
-           # print(f"erreserba : {type(erreserba)}")
-            #print(f"mail : {erreserba}")
-            #if erreserba:
-            kantzelatuta = library.kantzelatu_erreserba(erabiltzaile,kopia_id)
-            if kantzelatuta:
-                return render_template('mezua.html', tituloa="Kantzelatuta", mezua="Aukeratutako liburuaren erreserba kantzelatuta", location='/pertsonala')
-            else:
-                print(f" Erreserba ezin izan da kantzelatu")
-                return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da erreserba kantzelatu:",
-                                       location='/pertsonala')
-            #else:
-            #    print(f" Ez da erreserba aurkitu")
-            #    return render_template('mezua.html', tituloa="Errorea",
-            #                           mezua="Ezin izan da erreserba aurkitu",
-            #                           location='/pertsonala')
-    except Exception as e:
-        print(f"Errorea liburua kantzelatzeko prozesuan: {e}")
-        return redirect('/pertsonala')
-
 
 
 # @app.route('/historiala', methods=['POST'])
@@ -284,8 +243,12 @@ def liburuaSartu():
 
 @app.route('/foroak', methods=['GET', 'POST'])
 def foroak():
-    topics = library.get_all_topics()
-    return render_template('foroak.html', Gaiak=topics)
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        topics = library.get_all_topics()
+        return render_template('foroak.html', Gaiak=topics)
+    else:
+        return redirect('/login')
+
 
 @app.route('/gaia', methods=['GET', 'POST'])
 def gaia():
@@ -295,11 +258,13 @@ def gaia():
     if request.method == 'POST':
         komentarioa = request.form.get("komentarioa")
         print(gaia)
-        if 'user' in request.__dict__ and request.user and request.user.token:
-            library.komentarioaGehitu(request.user.MailKontua, gaia.title, 0, komentarioa)
-        else:
-            return render_template('mezua.html', tituloa="Ezin da komentatu",
-                                   mezua="Komentatzeko logeatu behar zara", location='/login')
+        library.komentarioaGehitu(request.user.MailKontua, gaia.title, 0, komentarioa)
+    else:
+        if gaia is None:
+            # Maneja el caso en el que el tema no se encuentra, por ejemplo, redirige o muestra un mensaje
+            return render_template('mezua.html', tituloa="Ez da aurkitu gai hori",
+                                   mezua="Aukeratutako gaia ez da existitzen", location='/foroak')
+
     komentarioak = library.get_comments_for_topic(gaia)
     print(komentarioak)
     return render_template('gaia.html', gaia=gaia, Komentarioak=komentarioak)
@@ -307,11 +272,50 @@ def gaia():
 
 @app.route('/gaiaSortu', methods=['POST'])
 def gaiaSortu():
+    izenburua = request.values.get("nuevoTitulo", "")
+    deskribapena = request.values.get("nuevaDeskribapena", "")
+    topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
+    return redirect('/gaia?id={}'.format(topic.id))
+
+
+@app.route('/komentatu', methods=['POST'])
+def Komentatu():
+    topic_id = request.values.get("id", -1)
+    topic = library.get_topic_by_id(topic_id)
+    komentarioa_string = request.values.get("komentarioa", "")
+    komentarioa = topic.sortu_komentarioa(komentarioa_string)
+    return redirect('/gaia?id={}'.format(topic.id))
+
+
+@app.route('/editatu', methods=['POST'])
+def ErreseinaEditatu():
     if 'user' in request.__dict__ and request.user and request.user.token:
-        izenburua = request.values.get("nuevoTitulo", "")
-        deskribapena = request.values.get("nuevaDeskribapena", "")
-        topic = library.create_topic(izenburua, deskribapena, request.user.MailKontua)
-        return redirect('/gaia?id={}'.format(topic.id))
+        if "liburua" in request.values and "erabiltzailea" in request.values:
+            liburua = request.values.get("liburua")
+            erabiltzailea = request.values.get("erabiltzailea")
+
+            # Erreseinen datu berriak jaso
+            puntuaketa = request.values.get("puntuaketa")
+            komentarioa = request.values.get("komentarioa")
+
+            # Datu basea aktualizatu
+            library.editarErresina(liburua, erabiltzailea, puntuaketa, komentarioa)
+
+            # Erreseina editatu ta gero pertsonalara eraman
+            return redirect('/pertsonala')
+        else:
+            # Manejar el caso en el que los datos no estén completos
+            flash('Faltan datos para editar la reseña', 'error')
+            return redirect('/pertsonala')  # O redirige a donde desees
     else:
-        return render_template('mezua.html', tituloa="Ezin da gaia sortu",
-                               mezua="Gaiak sortzeko logeatu behar zara", location='/login')
+        return redirect('/login')
+
+@app.route('/erreseinak_pantailaratu')
+def erreseinak_pantailaratu():
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        # Datu basetik erreseinak guztiak izan
+        erreseinak = library.getErreseinak()  # Library Controller-ko metodoari deitu
+
+        return render_template('erreseinak_pantailaratu.html', erreseinak=erreseinak)
+    else:
+        return redirect('/login')  # Redirigir al usuario a la página de inicio de sesión si no está autenticado
