@@ -48,11 +48,13 @@ def besteak():
 @app.route('/pertsonala')
 def pertsonala():
     page = int(request.values.get("page", 1))
+    title = request.values.get("title", "")
     if 'user' in request.__dict__ and request.user and request.user.token:
         email = request.user.MailKontua
-        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(email=email, page=page - 1)
+        erreserbak, erreseinak, lib_info, nb_erreserbak = library.search_erreserbak(titulua= title,email=email, page=page - 1)
         total_pages = (nb_erreserbak // 6) + 1
-        return render_template('pertsonala.html', erreserbak=erreserbak, erreseinak=erreseinak, lib_info=lib_info,
+        return render_template('pertsonala.html', title=title, erreserbak=erreserbak, erreseinak=erreseinak,
+                               lib_info=lib_info,
                                current_page=page,
                                total_pages=total_pages, max=max, min=min)
     else:
@@ -110,14 +112,6 @@ def liburua():
         return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu",
                                location='/catalogue')
 
-
-@app.route('/liburua')
-def liburua2():
-    book_id = request.values.get("id", "")
-    mail = request.user.MailKontua
-    erreserba = library.aurkitu_erreserba(book_id, mail)
-
-
 @app.route('/erreserbatu', methods=['POST'])
 def erreserbatu_liburua():
     try:
@@ -142,6 +136,51 @@ def erreserbatu_liburua():
     except Exception as e:
         print(f"Errorea liburua erreserbatzeko prozesuan: {e}")
         return redirect('/catalogue')
+
+@app.route('/liburua2')
+def liburua2():
+    book_id = request.values.get("id", "")
+    erabiltzaile = request.values.get("erab", "")
+    kopia_id = request.values.get("kopia_id", "")
+
+   # print(f"erreserba : {erreserba}")
+   # print(f"erreserba : {type(erreserba)}")
+    liburua = library.aurkitu_liburua(book_id)
+    if liburua :
+        return render_template('liburuKantzela.html', book=liburua, erabiltzaile=erabiltzaile, kopia_id=kopia_id)
+    else:
+        print(f" ID hau duen liburua ez da aurkitu: {book_id}")
+        return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da liburua aurkitu",
+                               location='/pertsonala')
+@app.route('/kantzelatu', methods=['POST'])
+def kantzelatu_liburua():
+    try:
+        if 'user' not in dir(request) or not request.user or not request.user.token:
+            # Por si acaso no esta logeado aunque no deberia de pasar
+            return redirect('/login')
+        else:
+            erabiltzaile = request.form.get('erabiltzaile')
+            kopia_id = request.form.get('kopia_id')
+            #book_id = request.form.get('libro_id')
+           # print(f"erreserba : {type(erreserba)}")
+            #print(f"mail : {erreserba}")
+            #if erreserba:
+            kantzelatuta = library.kantzelatu_erreserba(erabiltzaile,kopia_id)
+            if kantzelatuta:
+                return render_template('mezua.html', tituloa="Kantzelatuta", mezua="Aukeratutako liburuaren erreserba kantzelatuta", location='/pertsonala')
+            else:
+                print(f" Erreserba ezin izan da kantzelatu")
+                return render_template('mezua.html', tituloa="Errorea", mezua="Ezin izan da erreserba kantzelatu:",
+                                       location='/pertsonala')
+            #else:
+            #    print(f" Ez da erreserba aurkitu")
+            #    return render_template('mezua.html', tituloa="Errorea",
+            #                           mezua="Ezin izan da erreserba aurkitu",
+            #                           location='/pertsonala')
+    except Exception as e:
+        print(f"Errorea liburua kantzelatzeko prozesuan: {e}")
+        return redirect('/pertsonala')
+
 
 
 # @app.route('/historiala', methods=['POST'])

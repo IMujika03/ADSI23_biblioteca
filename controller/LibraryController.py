@@ -49,13 +49,13 @@ class LibraryController:
             print(f"Errorea aurkitu_liburua: {e}")
             return None
 
-    def lortu_liburu_guztiak(self):
-        res = db.select("SELECT l.* FROM Liburua l")
-        books = [
-            Book(b[0], b[1], b[2], b[3], b[4])
-            for b in res
-        ]
-        return books
+ #   def lortu_liburu_guztiak(self):
+  #      res = db.select("SELECT l.* FROM Liburua l")
+   #     books = [
+    #        Book(b[0], b[1], b[2], b[3], b[4])
+     #       for b in res
+      #  ]
+       # return books
 
     def get_related_books_by_author(self, book_id, limit=3):
 
@@ -65,11 +65,12 @@ class LibraryController:
         print(f"{author}")
         if author:
             # Obtener libros del mismo autor (excluyendo el libro actual)
-            related_books = [book for book in self.lortu_liburu_guztiak() if
-                             book.author == author and str(book.id) != (book_id)]
-
-            # Limitar la cantidad de libros relacionados
-            return related_books[:limit]
+            res = db.select("SELECT l.* FROM Liburua l WHERE Egilea = ? AND Kodea != ? LIMIT 3", (author, book_id,))
+            related_books = [
+                Book(b[0], b[1], b[2], b[3], b[4])
+                for b in res
+            ]
+            return related_books
 
         return []
 
@@ -118,6 +119,17 @@ class LibraryController:
             return False  # Error durante la reserva
 
     # def lortuHistoriala(self,mailKontua,limit=6, page=0):
+    def kantzelatu_erreserba(self, erabiltzaile, kopia_id):
+        try:
+            date = datetime.now()
+            db.update(
+                "UPDATE Erreserbatua SET noizEntregatuDa = ? WHERE LiburuKopia = ? AND Erabiltzailea = ? AND noizEntregatuDa IS NULL",
+                (date.timestamp(), kopia_id, erabiltzaile), )
+            print(f"Liburua entregatuta: {kopia_id}")
+            return True
+        except Exception as e:
+            print(f"Errorea liburua kantzelatzean: {e}")
+            return False  # Error durante la reserva
 
     def get_user(self, email, password):
         emaitza = db.select("SELECT * from Erabiltzailea WHERE MailKontua = ? AND Pasahitza = ?",
@@ -138,7 +150,7 @@ class LibraryController:
         else:
             return None
 
-    def search_erreserbak(self, email, limit=6, page=0):
+    def search_erreserbak(self, titulua, email, limit=6, page=0):
         count = db.select("""
 	        SELECT COUNT (*)
 	        FROM Liburu_Kopiak k
@@ -157,11 +169,11 @@ class LibraryController:
 	        ON k.KopiaID = e.LiburuKopia
 	        LEFT JOIN Erreseina v
 	        ON l.Kodea = v.Liburua AND e.Erabiltzailea = v.Erabiltzailea
-	        WHERE e.Erabiltzailea = ? 
+	        WHERE e.Erabiltzailea = ? AND l.Izenburua LIKE ?
 	        LIMIT ? OFFSET ?
-	        """, (email, limit, limit * page))
+	        """, (email,f"%{titulua}%", limit, limit * page))
         erreserbak = [
-            Erreserbatuta(e[0], e[1], e[2], e[3])  # 4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
+            Erreserbatuta(e[0], e[1], e[2], e[3], e[4])  # 4-ak kantzelatutaren informazioa dauka eta ez da behar momentuz
             for e in res
         ]
         erreseinak = [
