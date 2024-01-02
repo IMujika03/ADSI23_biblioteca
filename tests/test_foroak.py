@@ -21,8 +21,10 @@ class TestForoak(BaseTestClass):
 
     def test_komentatu(self):
         self.login('james@gmail.com', '123456')
-        gaia_id = 1
+        gaia_id = 2
         komentarioa_string = "Testaren proba"
         res = self.client.post(f'/gaia?id={gaia_id}', data={'komentarioa': komentarioa_string})
         self.assertEqual(200, res.status_code)
         page = BeautifulSoup(res.data, features="html.parser")
+        komentario_berria = f'james@gmail.com komentatu du: {komentarioa_string}'
+        self.assertIn('james@gmail.com komentatu du: Testaren proba', komentario_berria)
