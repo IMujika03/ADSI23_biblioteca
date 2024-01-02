@@ -10,6 +10,17 @@ class TestForoak(BaseTestClass):
         self.assertIn('Pasahitza ahastuta?', titles)
         self.assertIn('Nola logeatu', titles)
 
+    def test_gaia_sortu(self):
+        self.login('james@gmail.com', '123456')
+        izenburua_string = "Laguntza"
+        deskribapena_string = "Zalantzak argitzeko"
+        res = self.client.post('/gaiaSortu', data={'nuevoTitulo': izenburua_string, 'nuevaDeskribapena': deskribapena_string})
+        res = self.client.get('/foroak')
+        self.assertEqual(200, res.status_code)
+        page = BeautifulSoup(res.data, features="html.parser")
+        titles = [a.get_text(strip=True) for a in page.select('.container ul li a')]
+        self.assertIn('Laguntza', titles)
+
     def test_komentarioak_kontsultatu(self):
         gaia_id = 2
         res = self.client.get(f'/gaia?id={gaia_id}')
@@ -26,5 +37,5 @@ class TestForoak(BaseTestClass):
         res = self.client.post(f'/gaia?id={gaia_id}', data={'komentarioa': komentarioa_string})
         self.assertEqual(200, res.status_code)
         page = BeautifulSoup(res.data, features="html.parser")
-        komentario_berria = f'james@gmail.com komentatu du: {komentarioa_string}'
-        self.assertIn('james@gmail.com komentatu du: Testaren proba', komentario_berria)
+        komentarioak = [li.get_text(strip=True) for li in page.select('.container ul li')]
+        self.assertIn('james@gmail.com komentatu du: Testaren proba', komentarioak)
