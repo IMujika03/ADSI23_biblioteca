@@ -314,7 +314,8 @@ def gaiaSortu():
         return render_template('mezua.html', tituloa="Ezin da gaia sortu",
                                mezua="Gaiak sortzeko logeatu behar zara", location='/login')
 
-@app.route('/editatu', methods=['POST'])
+
+@app.route('/editatu', methods=['GET','POST'])
 def ErreseinaEditatu():
     if 'user' in request.__dict__ and request.user and request.user.token:
         if "liburua" in request.values and "erabiltzailea" in request.values:
@@ -326,7 +327,7 @@ def ErreseinaEditatu():
             komentarioa = request.values.get("komentarioa")
 
             # Datu basea aktualizatu
-            library.editarErresina(liburua, erabiltzailea, puntuaketa, komentarioa)
+            library.ErreseinaEditatu(liburua, erabiltzailea, puntuaketa, komentarioa)
 
             # Erreseina editatu ta gero pertsonalara eraman
             return redirect('/pertsonala')
@@ -337,7 +338,7 @@ def ErreseinaEditatu():
     else:
         return redirect('/login')
 
-@app.route('/erreseinak_pantailaratu')
+@app.route('/erreseinak_pantailaratu', methods = 'POST')
 def erreseinak_pantailaratu():
     if 'user' in request.__dict__ and request.user and request.user.token:
         # Datu basetik erreseinak guztiak izan
@@ -346,3 +347,31 @@ def erreseinak_pantailaratu():
         return render_template('erreseinak_pantailaratu.html', erreseinak=erreseinak)
     else:
         return redirect('/login')  # Redirigir al usuario a la página de inicio de sesión si no está autenticado
+
+@app.route('/ErreseinaEgin', methods=['POST'])
+def ErreseinaEgin():
+    if 'user' in request.__dict__ and request.user and request.user.token:
+        # Obtener los datos del formulario para crear la reseña
+        komentarioa = request.form.get("komentarioa")
+        puntuaketa = request.form.get("puntuaketa")
+
+        # Verificar si se proporcionaron los datos necesarios para la reseña
+        if komentarioa and puntuaketa:
+            # Llamar al método correspondiente de tu controlador para crear la reseña
+            # Reemplaza 'library' con el nombre correcto de tu controlador o módulo correspondiente
+            res = library.sortuErreseina(komentarioa, puntuaketa)  # Aquí deberías llamar a tu método correspondiente
+
+            if res:
+                # Si la reseña se creó correctamente, redirigir a algún lugar o mostrar un mensaje de éxito
+                return redirect('/exito')  # Reemplaza '/exito' con la URL a la que quieras redirigir
+            else:
+                # Manejar el caso en el que la reseña no se pueda crear por alguna razón
+                flash('Ezin izan da sortu erreseina', 'error')
+                return redirect('/error')  # Reemplaza '/error' con la URL a la que quieras redirigir en caso de error
+        else:
+            # Manejar el caso en el que faltan datos para crear la reseña
+            flash('Dato inkonpleto erreseina betetzeko', 'error')
+            return redirect('/incompleto')  # Reemplaza '/incompleto' con la URL a la que quieras redirigir si faltan datos
+    else:
+        # Si el usuario no está autenticado, redirigir a la página de inicio de sesión
+        return redirect('/login')  # Reemplaza '/login' con la URL de tu página de inicio de sesión

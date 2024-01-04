@@ -393,10 +393,7 @@ class LibraryController:
     def sortu_erreseina(self, komentarioa, puntuaketa, MailKontua, Liburua):
         try:
             date = datetime.now()
-            db.insert("""
-                INSERT INTO Erreseina (Komentarioa, Puntuaketa, Erabiltzailea, Liburua, Data)
-                VALUES (?, ?, ?, ?, ?)
-            """, (komentarioa, puntuaketa, MailKontua, Liburua, date.timestamp()))
+            db.insert("""INSERT INTO Erreseina (Komentarioa, Puntuaketa, Erabiltzailea, Liburua, Data)VALUES (?, ?, ?, ?, ?)""", (komentarioa, puntuaketa, MailKontua, Liburua, date.timestamp()))
 
             # Opcional: Recuperar y devolver el objeto Erreseina recién creado
             res = db.select(
