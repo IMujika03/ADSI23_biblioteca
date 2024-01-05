@@ -315,38 +315,40 @@ def gaiaSortu():
                                mezua="Gaiak sortzeko logeatu behar zara", location='/login')
 
 
-@app.route('/editatu', methods=['GET','POST'])
+@app.route('/editatu', methods=['GET', 'POST'])
 def ErreseinaEditatu():
     if 'user' in request.__dict__ and request.user and request.user.token:
-        if "liburua" in request.values and "erabiltzailea" in request.values:
-            liburua = request.values.get("liburua")
-            erabiltzailea = request.values.get("erabiltzailea")
+        if request.method == 'POST':
+            liburua = request.form.get("liburua")
+            erabiltzailea = request.form.get("erabiltzailea")
+            puntuaketa = request.form.get("puntuaketa")
+            komentarioa = request.form.get("komentarioa")
 
-            # Erreseinen datu berriak jaso
-            puntuaketa = request.values.get("puntuaketa")
-            komentarioa = request.values.get("komentarioa")
-
-            # Datu basea aktualizatu
-            library.ErreseinaEditatu(liburua, erabiltzailea, puntuaketa, komentarioa)
-
-            # Erreseina editatu ta gero pertsonalara eraman
-            return redirect('/pertsonala')
+            if liburua and erabiltzailea:
+                library.sortuErreseina(komentarioa, puntuaketa, erabiltzailea, liburua)
+                return redirect('/pertsonala')
+            else:
+                flash('Faltan datos para editar la reseña', 'error')
+                return redirect('/pertsonala')
         else:
-            # Manejar el caso en el que los datos no estén completos
-            flash('Faltan datos para editar la reseña', 'error')
-            return redirect('/pertsonala')  # O redirige a donde desees
+            flash('Petición no válida', 'error')
+            return redirect('/pertsonala')
     else:
         return redirect('/login')
 
-@app.route('/erreseinak_pantailaratu', methods = 'POST')
+@app.route('/erreseinak_pantailaratu', methods=['POST'])
 def erreseinak_pantailaratu():
     if 'user' in request.__dict__ and request.user and request.user.token:
-        # Datu basetik erreseinak guztiak izan
-        erreseinak = library.getErreseinak()  # Library Controller-ko metodoari deitu
+        if request.method == 'POST':
+            # Obtener todas las reseñas de la base de datos
+            erreseinak = library.getErreseinak()
 
-        return render_template('erreseinak_pantailaratu.html', erreseinak=erreseinak)
+            return render_template('´pertsonala.html', erreseinak=erreseinak)
+        else:
+            flash('Petición no válida', 'error')
+            return redirect('/pertsonala')  # O redirige a donde desees
     else:
-        return redirect('/login')  # Redirigir al usuario a la página de inicio de sesión si no está autenticado
+        return redirect('/login')
 
 @app.route('/ErreseinaEgin', methods=['POST'])
 def ErreseinaEgin():
@@ -358,20 +360,22 @@ def ErreseinaEgin():
         # Verificar si se proporcionaron los datos necesarios para la reseña
         if komentarioa and puntuaketa:
             # Llamar al método correspondiente de tu controlador para crear la reseña
-            # Reemplaza 'library' con el nombre correcto de tu controlador o módulo correspondiente
-            res = library.sortuErreseina(komentarioa, puntuaketa)  # Aquí deberías llamar a tu método correspondiente
+            # Esto depende de cómo manejes la creación de reseñas en tu aplicación
+            # Suponiendo que tienes métodos en tu controlador para crear reseñas
+            res = library.sortuErreseina(komentarioa, puntuaketa)  # Reemplaza 'library' con tu controlador correspondiente
 
             if res:
                 # Si la reseña se creó correctamente, redirigir a algún lugar o mostrar un mensaje de éxito
-                return redirect('/exito')  # Reemplaza '/exito' con la URL a la que quieras redirigir
+                flash('Erresea ondo egin da!', 'success')
+                return redirect('/liburua?id=123')  # Reemplaza '/liburua?id=123' con la URL a la que quieras redirigir
             else:
                 # Manejar el caso en el que la reseña no se pueda crear por alguna razón
                 flash('Ezin izan da sortu erreseina', 'error')
-                return redirect('/error')  # Reemplaza '/error' con la URL a la que quieras redirigir en caso de error
+                return redirect('/errorea')  # Reemplaza '/errorea' con la URL a la que quieras redirigir en caso de error
         else:
             # Manejar el caso en el que faltan datos para crear la reseña
             flash('Dato inkonpleto erreseina betetzeko', 'error')
-            return redirect('/incompleto')  # Reemplaza '/incompleto' con la URL a la que quieras redirigir si faltan datos
+            return redirect('/osoa')  # Reemplaza '/osoa' con la URL a la que quieras redirigir si faltan datos
     else:
         # Si el usuario no está autenticado, redirigir a la página de inicio de sesión
-        return redirect('/login')  # Reemplaza '/login' con la URL de tu página de inicio de sesión
+        return redirect('/saioa')  # Reemplaza '/saioa' con la URL de tu página de inicio de sesión
