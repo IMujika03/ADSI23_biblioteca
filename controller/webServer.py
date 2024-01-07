@@ -243,7 +243,7 @@ def erabiltzaileaSortu():
             flash('Errore bat egon da. Ziur zaude erabiltzaile hori existitzen ez dela?', 'error')
             return redirect(url_for('erabiltzaileaSortu'))
 
-    # Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+    # Si no es un método POST, mostrar el formulario erabiltzaileaSortu.html
     return redirectNoAdmin("erabiltzaileaSortu.html", "login")
 
 
@@ -258,7 +258,7 @@ def erabiltzaileaEzabatu():
             flash('Errore bat egon da. Ziur zaude erabiltzaile hori existitzen dela?', 'error')
             return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
 
-    # Si no es un método POST o si hay algún error, mostrar el formulario erabiltzaileaSortu.html
+    # Si no es un método POST, mostrar el formulario erabiltzaileaSortu.html
     return redirectNoAdmin("erabiltzaileaEzabatu.html", "login")
 
 
@@ -272,9 +272,8 @@ def liburuaSartu():
 
         if library.existitzenEzBadaLiburuaSortu(izenburua, egilea, irudia, deskribapena):
             return redirect(url_for('catalogue'))
-        else:
-            flash('Errore bat egon da. Ziur zaude liburu hori existitzen ez dela?', 'error')
-            return redirectNoAdmin("liburuaSartu.html", "login")
+        else: # kopia bada
+            return redirect(url_for('catalogue'))
 
     # Si no es un método POST , mostrar el formulario erabiltzaileaSortu.html
     return redirectNoAdmin("liburuaSartu.html", "login")

@@ -341,11 +341,19 @@ class LibraryController:
             self.liburuaGehitu(lib)
             return True
         else:
+            lib = Book(None, izenburua, egilea, irudia, deskribapena)
+            self.liburuaKopiaGehitu(s[0][0], self.liburuaGehitu(lib))
             return False
 
     def liburuaGehitu(self, lib):
         db.insert("INSERT INTO Liburua (Izenburua, Egilea, Portada, Deskribapena) VALUES (?, ?, ?, ?)",
                   (lib.title, lib.author, lib.cover, lib.description))
+        s = db.select("SELECT MAX(Kodea) as last_id FROM Liburua")
+        return s[0][0]
+
+    def liburuaKopiaGehitu(self, id1, id2):
+        db.insert("INSERT INTO Liburu_Kopiak VALUES (?, ?)",
+                  (id2, id1))
 
     def getErreseinak(self, book_title):
         try:

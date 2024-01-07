@@ -46,6 +46,7 @@ class test_erabiltzaileaSortu(BaseTestClass):
 
         # Erabiltzailea ondo sortu dela egiaztatu
         self.assertEqual(302, create_user_response.status_code)
+        self.assertEqual(create_user_response.headers.get('Location'), '/catalogue')
 
         # Datu-basean erabiltzaile berria bilatu
         cur.execute("SELECT * FROM Erabiltzailea WHERE MailKontua = 'email@email.com'")
