@@ -4,14 +4,29 @@ import sqlite3
 from . import BaseTestClass
 from bs4 import BeautifulSoup
 
-
 class test_erabiltzaileaSortu(BaseTestClass):
 
-    def test_admin_user_creation(self):
-        # Simulando el inicio de sesión como administrador
+    def test_erabiltzaileaSortu(self):
+        # Fitxategi izenaren lerroan dagoen karpeta helbidea hartu
+        fitx_izen = os.path.dirname(__file__)
+        db_path = os.path.join(fitx_izen, "..",
+                               "datos.db")  # Guraso direktoriaren helbidea behar da, bestela ez da aurkitzen
+
+        # Konexioa sortu datu-basearekin
+        con = sqlite3.connect(db_path)
+        cur = con.cursor()
+
+        # Erabiltzailea bilatu
+        cur.execute("SELECT * FROM Erabiltzailea WHERE MailKontua = 'email@email.com'")
+        user = cur.fetchone()
+
+        # Erabiltzailea ez da existitzen
+        self.assertEqual(None, user)
+
+        # Administratzaile bezala saioa hasi
         self.login('admin@gmail.com', 'master')
 
-        # Datos para el formulario de creación de usuario
+        # Erabiltzailea sortzeko formularioaren datuak
         user_data = {
             'izena': 'izena',
             'abizena': 'abizena',
@@ -19,36 +34,43 @@ class test_erabiltzaileaSortu(BaseTestClass):
             'password': 'pasahitza'
         }
 
-        # URL de la página a la que quieres ir después del inicio de sesión
+        # Saioa hasita, helbide horretara joan
         desired_page_url = '/erabiltzaileaSortu'
-
-        # Ir a la página deseada después de iniciar sesión
         page_response = self.client.get(desired_page_url)
 
-        # Verificar si la página se cargó correctamente después de iniciar sesión
+        # Saioa hasita orri hau ondo kargatu duela egiaztatu
         self.assertEqual(200, page_response.status_code)
 
-        # Crear un usuario después de ir a la página deseada
+        # Erabiltzailea sortu orri horretan joan ondoren
         create_user_response = self.client.post(desired_page_url, data=user_data)
 
-        # Verificar si la creación de usuario fue exitosa
-        self.assertEqual(200, create_user_response.status_code)
+        # Erabiltzailea ondo sortu dela egiaztatu
+        self.assertEqual(302, create_user_response.status_code)
 
-        fitx_izen = os.path.dirname(__file__)
-        db_path = os.path.join(fitx_izen, "..", "datos.db")  # Guraso direktoriaren helbidea behar da, bestela ez da aurkitzen
-
-        con = sqlite3.connect(db_path)
-        cur = con.cursor()
-
-        # Ejecutar una consulta para verificar la existencia de la nueva persona
+        # Datu-basean erabiltzaile berria bilatu
         cur.execute("SELECT * FROM Erabiltzailea WHERE MailKontua = 'email@email.com'")
         user = cur.fetchone()
 
-        # Cerrar la conexión
-        cur.close()
+        # Erabiltzailea sortu da
+        self.assertNotEqual(None, user)
 
-        # Verificar si se encontró la nueva persona en la base de datos
-        if user is not None:
-            print("La nueva persona ha sido añadida a la base de datos")
-        else:
-            print("La nueva persona no se encontró en la base de datos")
+        # Berriro sortzen saiatu
+        page_response = self.client.get(desired_page_url)
+        self.assertEqual(200, page_response.status_code)
+
+        # Erabiltzailea berriro ez sortu dela egiaztatu
+        create_user_response = self.client.post(desired_page_url, data=user_data)
+        self.assertEqual(302, create_user_response.status_code)
+        self.assertEqual(create_user_response.headers.get('Location'), '/erabiltzaileaSortu')
+
+        # Erabiltzailea ezabatu
+        cur.execute("DELETE FROM Erabiltzailea WHERE MailKontua = 'email@email.com'")
+        con.commit()
+
+        # Erabiltzailea ondo ezabatu dela egiaztatu
+        cur.execute("SELECT * FROM Erabiltzailea WHERE MailKontua = 'email@email.com'")
+        user = cur.fetchone()
+        self.assertEqual(None, user)
+
+        # Konexioa itxi
+        cur.close()
