@@ -43,6 +43,7 @@ class TestErreserbak(BaseTestClass):
         self.assertEqual(200, res.status_code)  # Orriak ondo funtzionatzen du bertara heltzen delako
         page = BeautifulSoup(res.data, features="html.parser")
         title = page.select_one('h5.card-title a').getText()
+        #print(f"{title}")
         self.assertEqual('Planilandia', title)  # Erabiltzaileak liburu hau erreserbaturik du
         mezua = page.find(string="Ez daude libururik erreserbaturik.")
         self.assertNotEqual('Ez daude libururik erreserbaturik.', mezua)  # Ez da agertzen errore mezurik
@@ -59,6 +60,8 @@ class TestErreserbak(BaseTestClass):
         #Erreserbatze partea
         self.login('james@gmail.com', '123456')  # add assertion here
         book_id = 260
+        title = self.db.select("SELECT Izenburua FROM Liburua WHERE Kodea = ?", (book_id,))[0][0]
+        #print(f"{title}")
         res = self.client.get('/liburuBista')
         page = BeautifulSoup(res.data, features="html.parser")
         # Egin erreserbatzea
@@ -70,8 +73,11 @@ class TestErreserbak(BaseTestClass):
         res3 = self.db.select(f"SELECT * FROM Erreserbatua WHERE Erabiltzailea = ? AND noizEntregatuDa IS NULL",
                               ('james@gmail.com',))
         self.assertIsNotNone(res3)
-        res4 = self.client.get('/liburuKantzela')
+        res4 = self.client.get('/pertsonala')
         page2 = BeautifulSoup(res4.data, features="html.parser")
+        title = page2.find(string="Un hueco en la pared")
+        self.assertEqual('Un hueco en la pared', title)
+
         erab = self.db.select("SELECT Erabiltzailea FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
         kopia_id = self.db.select("SELECT LiburuKopia FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
         #Egin kantzelazioa
