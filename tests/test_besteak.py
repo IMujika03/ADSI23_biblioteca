@@ -13,8 +13,8 @@ class test_besteak(BaseTestClass):
 
         # Administratzaileentzako aukera espezifikoak agertzea egiaztatu
         self.assertTrue(any("Administratzailea erabiltzaileak sortzeko aukera" in str(option) for option in admin_options))
-        self.assertTrue(any("Administratzaileak erabiltzaileak ezabatzeko aukera" in str(option) for option in admin_options))
-        self.assertTrue(any("Administratzaileak liburuak sartzeko aukera" in str(option) for option in admin_options))
+        self.assertTrue(any("Administratzailea erabiltzaileak ezabatzeko aukera" in str(option) for option in admin_options))
+        self.assertTrue(any("Administratzailea liburuak sartzeko aukera" in str(option) for option in admin_options))
 
     def test_non_admin_access(self):
         # Admin erabiltzailea ez den erabiltzaile bat simulatu
