@@ -43,10 +43,10 @@ class test_liburuaSartu(BaseTestClass):
 
         # 'izena' izeneko liburua datu-basean bilatu
         cur.execute("SELECT * FROM Liburua WHERE Izenburua = 'izena'")
-        user = cur.fetchone()
+        book = cur.fetchone()
 
         # Liburua ez dago None-en berdina
-        self.assertNotEqual(None, user)
+        self.assertNotEqual(None, book)
 
         # Konexioa itxi
         cur.close()
