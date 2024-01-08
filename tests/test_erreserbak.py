@@ -60,7 +60,7 @@ class TestErreserbak(BaseTestClass):
         #Erreserbatze partea
         self.login('james@gmail.com', '123456')  # add assertion here
         book_id = 260
-        title = self.db.select("SELECT Izenburua FROM Liburua WHERE Kodea = ?", (book_id,))[0][0]
+        title1 = self.db.select("SELECT Izenburua FROM Liburua WHERE Kodea = ?", (book_id,))[0][0]
         #print(f"{title}")
         res = self.client.get('/liburuBista')
         page = BeautifulSoup(res.data, features="html.parser")
@@ -76,7 +76,7 @@ class TestErreserbak(BaseTestClass):
         res4 = self.client.get('/pertsonala')
         page2 = BeautifulSoup(res4.data, features="html.parser")
         title = page2.find(string="Un hueco en la pared")
-        self.assertEqual('Un hueco en la pared', title)
+        self.assertEqual(title1, title)
 
         erab = self.db.select("SELECT Erabiltzailea FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
         kopia_id = self.db.select("SELECT LiburuKopia FROM Erreserbatua WHERE noizEntregatuDa IS NULL")[0][0]
